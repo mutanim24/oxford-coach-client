@@ -5,7 +5,7 @@ import busImg from '../../assets/img/bus-1.jpg'; // adjust path as needed
 const Hero = () => {
   return (
     <div
-      className="hero min-h-screen bg-cover"
+      className="hero min-h-screen bg-cover pt-10"
       style={{ backgroundImage: `url(${busImg})` }}
     >
       <div className="hero-overlay bg-black bg-opacity-50"></div>
