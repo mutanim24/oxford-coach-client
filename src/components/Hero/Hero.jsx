@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 const Hero = () => {
   return (
     <div
-      className="hero min-h-screen bg-cover bg-center py-16"
+      className="hero min-h-screen bg-cover bg-center py-16 opacity-100"
       style={{ backgroundImage: `url(${busImg})` }}
     >
       <div className="hero-overlay bg-gradient-to-t from-black/60 via-black/40 to-transparent"></div>
