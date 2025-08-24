@@ -105,12 +105,46 @@ const getScheduleById = async (id) => {
   return response.data;
 };
 
+// Get all schedules
+const getAllSchedules = async () => {
+  const token = localStorage.getItem('token');
+  console.log('Fetching all schedules with token:', token ? 'present' : 'missing');
+  
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  };
+  
+  console.log('API URL:', API_URL);
+  console.log('Request config:', config);
+  
+  try {
+    const response = await axios.get(API_URL, config);
+    console.log('All schedules fetched successfully:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching all schedules:', error);
+    if (error.response) {
+      console.error('Error response data:', error.response.data);
+      console.error('Error response status:', error.response.status);
+      console.error('Error response headers:', error.response.headers);
+    } else if (error.request) {
+      console.error('Error request:', error.request);
+    } else {
+      console.error('Error message:', error.message);
+    }
+    throw error;
+  }
+};
+
 const scheduleService = {
   getSchedulesByBusId,
   createSchedule,
   updateSchedule,
   deleteSchedule,
-  getScheduleById
+  getScheduleById,
+  getAllSchedules
 };
 
 export default scheduleService;

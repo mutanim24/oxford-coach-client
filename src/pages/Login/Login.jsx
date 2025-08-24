@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import AuthForm from '../../components/AuthForm/AuthForm';
 
@@ -15,6 +15,7 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
 
   /**
@@ -42,8 +43,9 @@ const Login = () => {
       const result = await login(formData);
       
       if (result.success) {
-        // Login successful, redirect to home
-        navigate('/');
+        // Login successful, redirect to the page the user was trying to access or home
+        const from = location.state?.from?.pathname || '/';
+        navigate(from, { replace: true });
       } else {
         // Login failed
         setError(result.error || 'Login failed');

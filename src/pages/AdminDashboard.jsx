@@ -30,10 +30,16 @@ const AdminDashboard = () => {
             Manage Buses
           </Link>
           <Link 
-            to="/admin/buses" 
+            to="/admin/schedules/:busId" 
             className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors"
           >
             Manage Schedules
+          </Link>
+          <Link 
+            to="/admin/users" 
+            className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 transition-colors"
+          >
+            Manage Users
           </Link>
         </div>
       </div>

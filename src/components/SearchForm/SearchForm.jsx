@@ -37,11 +37,22 @@ const SearchForm = () => {
       return;
     }
     
-    const result = await searchBuses(formData);
+    // Create a copy of the form data to avoid mutating state
+    const searchData = {
+      from: formData.from,
+      to: formData.to,
+      date: new Date(formData.date) // Ensure it's a Date object
+    };
+    
+    console.log('Submitting search with:', searchData);
+    
+    const result = await searchBuses(searchData);
     
     if (result.success) {
-      // Navigate to search results page
-      navigate('/search-results');
+      // Navigate to search results page with search parameters
+      navigate('/search-results', { 
+        state: { searchData: searchData }
+      });
     } else {
       alert(result.error || 'Failed to search buses');
     }

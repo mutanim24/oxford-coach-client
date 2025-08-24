@@ -9,6 +9,8 @@ import AdminLayout from './components/AdminLayout';
 import AdminDashboard from './pages/AdminDashboard';
 import ManageBuses from './pages/ManageBuses';
 import ManageSchedules from './pages/ManageSchedules';
+import AllSchedules from './pages/AllSchedules';
+import UsersPage from './pages/UsersPage';
 import SearchResults from './pages/SearchResults';
 import BusDetails from './pages/BusDetails';
 import AdminRoute from './components/AdminRoute';
@@ -37,6 +39,8 @@ function App() {
                   <Route index element={<AdminDashboard />} />
                   <Route path="buses" element={<ManageBuses />} />
                   <Route path="schedules/:busId" element={<ManageSchedules />} />
+                  <Route path="all-schedules" element={<AllSchedules />} />
+                  <Route path="users" element={<UsersPage />} />
                 </Route>
               </Routes>
             </main>

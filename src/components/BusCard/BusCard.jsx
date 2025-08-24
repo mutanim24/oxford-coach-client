@@ -8,6 +8,11 @@ const BusCard = ({ schedule }) => {
     navigate(`/bus/${schedule._id}`);
   };
 
+  // Format departure time
+  const departureTime = new Date(schedule.departureTime);
+  const formattedDate = departureTime.toLocaleDateString();
+  const formattedTime = departureTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
       <div className="p-6">
@@ -33,8 +38,12 @@ const BusCard = ({ schedule }) => {
             <span className="font-medium">{schedule.destination}</span>
           </div>
           <div className="flex items-center justify-between mb-2">
+            <span className="text-gray-600">Date:</span>
+            <span className="font-medium">{formattedDate}</span>
+          </div>
+          <div className="flex items-center justify-between mb-2">
             <span className="text-gray-600">Departure:</span>
-            <span className="font-medium">{new Date(schedule.departureTime).toLocaleString()}</span>
+            <span className="font-medium">{formattedTime}</span>
           </div>
           <div className="flex items-center justify-between mb-2">
             <span className="text-gray-600">Fare:</span>

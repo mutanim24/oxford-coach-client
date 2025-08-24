@@ -1,14 +1,25 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSearch } from '../context/SearchContext';
 import { useLocation } from 'react-router-dom';
 import BusCard from '../components/BusCard/BusCard';
 
 const SearchResults = () => {
-  const { searchResults, isLoading, error } = useSearch();
+  const { searchResults, isLoading, error, searchBusesWithoutDate } = useSearch();
   const location = useLocation();
   
   // Get search parameters from location state or URL params
   const searchParams = location.state?.searchData || null;
+  
+  // Check if we're loading from URL params
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const source = params.get('source');
+    const destination = params.get('destination');
+    
+    if (source && destination && !searchParams) {
+      searchBusesWithoutDate(source, destination);
+    }
+  }, [location.search, searchParams, searchBusesWithoutDate]);
 
   if (isLoading) {
     return (
@@ -52,7 +63,7 @@ const SearchResults = () => {
             <p className="text-gray-600">
               Showing buses from <span className="font-medium">{searchParams.from}</span> to 
               <span className="font-medium"> {searchParams.to}</span> on 
-              <span className="font-medium"> {searchParams.date.toLocaleDateString()}</span>
+              <span className="font-medium"> {searchParams.date instanceof Date ? searchParams.date.toLocaleDateString() : searchParams.date}</span>
             </p>
           )}
         </div>
@@ -66,12 +77,35 @@ const SearchResults = () => {
             <p className="text-gray-600 mb-4">
               We couldn't find any buses for your selected route and date. Please try different search criteria.
             </p>
-            <button 
-              onClick={() => window.history.back()}
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-            >
-              Search Again
-            </button>
+            <div className="mb-4">
+              <p className="text-sm text-gray-500 mb-2">Tips for better search results:</p>
+              <ul className="text-sm text-gray-600 text-left max-w-md mx-auto">
+                <li className="mb-1">• Check the spelling of your source and destination</li>
+                <li className="mb-1">• Try nearby cities or locations</li>
+                <li className="mb-1">• Select a different date</li>
+                <li>• Try a more general search (e.g., just city names)</li>
+              </ul>
+            </div>
+            <div className="flex justify-center space-x-4">
+              <button 
+                onClick={() => window.history.back()}
+                className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+              >
+                Search Again
+              </button>
+              <button 
+                onClick={() => {
+                  // Try searching without date filter
+                  if (searchParams) {
+                    const { from, to } = searchParams;
+                    searchBusesWithoutDate(from, to);
+                  }
+                }}
+                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+              >
+                Show All Buses for This Route
+              </button>
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

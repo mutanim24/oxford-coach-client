@@ -18,7 +18,15 @@ export const SearchProvider = ({ children }) => {
     
     try {
       // Format date for API (YYYY-MM-DD)
-      const formattedDate = searchData.date.toISOString().split('T')[0];
+      const formattedDate = searchData.date instanceof Date 
+        ? searchData.date.toISOString().split('T')[0] 
+        : searchData.date;
+      
+      console.log('Searching with parameters:', {
+        source: searchData.from,
+        destination: searchData.to,
+        date: formattedDate
+      });
       
       const response = await axios.get('http://localhost:5000/api/search', {
         params: {
@@ -28,10 +36,50 @@ export const SearchProvider = ({ children }) => {
         }
       });
       
-      setSearchResults(response.data);
-      return { success: true, data: response.data };
+      console.log('Search response:', response.data);
+      
+      // Ensure we have an array, even if the API returns a single object
+      const results = Array.isArray(response.data) ? response.data : [response.data].filter(Boolean);
+      
+      setSearchResults(results);
+      return { success: true, data: results };
     } catch (err) {
       console.error('Search error:', err);
+      const errorMessage = err.response?.data?.message || 'Failed to search buses';
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const searchBusesWithoutDate = async (source, destination) => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      console.log('Searching without date filter with parameters:', {
+        source,
+        destination
+      });
+      
+      const response = await axios.get('http://localhost:5000/api/search', {
+        params: {
+          source,
+          destination,
+          date: new Date().toISOString().split('T')[0] // Use today's date as a placeholder
+        }
+      });
+      
+      console.log('Search response without date filter:', response.data);
+      
+      // Ensure we have an array, even if the API returns a single object
+      const results = Array.isArray(response.data) ? response.data : [response.data].filter(Boolean);
+      
+      setSearchResults(results);
+      return { success: true, data: results };
+    } catch (err) {
+      console.error('Search error without date filter:', err);
       const errorMessage = err.response?.data?.message || 'Failed to search buses';
       setError(errorMessage);
       return { success: false, error: errorMessage };
@@ -50,6 +98,7 @@ export const SearchProvider = ({ children }) => {
     isLoading,
     error,
     searchBuses,
+    searchBusesWithoutDate,
     clearSearch
   };
 
