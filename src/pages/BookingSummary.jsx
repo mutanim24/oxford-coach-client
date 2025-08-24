@@ -1,14 +1,20 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import scheduleService from '../services/scheduleService';
+import CheckoutForm from '../components/PaymentForm/CheckoutForm';
 
 const BookingSummary = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useContext(AuthContext);
   const [bookingData, setBookingData] = useState(null);
+  const [scheduleDetails, setScheduleDetails] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [bookingId, setBookingId] = useState(null);
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
 
   useEffect(() => {
     // Check if user is authenticated
@@ -27,30 +33,82 @@ const BookingSummary = () => {
 
     const { scheduleId, selectedSeats, fare } = state;
     setBookingData({ scheduleId, selectedSeats, fare });
-    setIsLoading(false);
+    
+    // Fetch schedule details
+    const fetchScheduleDetails = async () => {
+      try {
+        const response = await scheduleService.getScheduleById(scheduleId);
+        setScheduleDetails(response.schedule);
+      } catch (err) {
+        console.error('Error fetching schedule details:', err);
+        setError('Failed to load schedule details. Please try again.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchScheduleDetails();
   }, [user, navigate, location.state]);
 
-  const handleConfirmBooking = async () => {
-    if (!bookingData) return;
+  const handleCreateBooking = async () => {
+    if (!bookingData || !scheduleDetails) return;
 
     try {
-      // Here you would typically make an API call to create the booking
-      // For now, we'll just simulate a successful booking
-      console.log('Creating booking...', bookingData);
+      setIsLoading(true);
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Navigate to a success page or show a success message
-      navigate('/booking-confirmation', { 
-        state: { 
-          bookingData 
-        } 
+      // Prepare booking data
+      const bookingPayload = {
+        scheduleId: bookingData.scheduleId,
+        selectedSeats: bookingData.selectedSeats,
+        totalAmount: bookingData.selectedSeats.length * bookingData.fare,
+        userId: user._id
+      };
+
+      // Make API call to create the booking
+      const response = await fetch('http://localhost:5000/api/bookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.token}`
+        },
+        body: JSON.stringify(bookingPayload)
       });
+
+      if (!response.ok) {
+        throw new Error('Failed to create booking');
+      }
+
+      const booking = await response.json();
+      setBookingId(booking.booking._id);
+      setShowPaymentForm(true);
     } catch (err) {
       console.error('Error creating booking:', err);
       setError('Failed to create booking. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const handlePaymentSuccess = (booking) => {
+    setPaymentSuccess(true);
+    navigate('/booking-confirmation', { 
+      state: { 
+        bookingData: {
+          ...booking,
+          busName: scheduleDetails.bus.name,
+          source: scheduleDetails.source,
+          destination: scheduleDetails.destination,
+          departureTime: scheduleDetails.departureTime,
+          operator: scheduleDetails.bus.operator,
+          seats: bookingData.selectedSeats
+        }
+      } 
+    });
+  };
+
+  const handlePaymentError = (error) => {
+    console.error('Payment error:', error);
+    setError('Payment failed. Please try again.');
   };
 
   if (isLoading) {
@@ -92,6 +150,25 @@ const BookingSummary = () => {
 
   const totalFare = bookingData.selectedSeats.length * bookingData.fare;
 
+  // Show payment form if booking is created and payment is needed
+  if (showPaymentForm && bookingId) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="container mx-auto px-4">
+          <div className="max-w-2xl mx-auto">
+            <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">Complete Your Payment</h1>
+            <CheckoutForm 
+              bookingId={bookingId} 
+              amount={totalFare}
+              onPaymentSuccess={handlePaymentSuccess}
+              onPaymentError={handlePaymentError}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
@@ -110,9 +187,16 @@ const BookingSummary = () => {
             <div className="mb-6">
               <h2 className="text-lg font-semibold text-gray-700 mb-2">Trip Details</h2>
               <div className="bg-gray-50 p-4 rounded-lg">
-                {/* Here you would typically display the schedule details */}
-                {/* For now, we'll just show the schedule ID */}
-                <p className="text-gray-600"><span className="font-medium">Schedule ID:</span> {bookingData.scheduleId}</p>
+                {scheduleDetails ? (
+                  <>
+                    <p className="text-gray-600"><span className="font-medium">Bus Operator:</span> {scheduleDetails.bus.operator}</p>
+                    <p className="text-gray-600"><span className="font-medium">Route:</span> {scheduleDetails.source} → {scheduleDetails.destination}</p>
+                    <p className="text-gray-600"><span className="font-medium">Departure Time:</span> {new Date(scheduleDetails.departureTime).toLocaleString()}</p>
+                    <p className="text-gray-600"><span className="font-medium">Bus Type:</span> {scheduleDetails.bus.busType}</p>
+                  </>
+                ) : (
+                  <p className="text-gray-600">Loading trip details...</p>
+                )}
               </div>
             </div>
 
@@ -151,10 +235,21 @@ const BookingSummary = () => {
                 Back
               </button>
               <button 
-                onClick={handleConfirmBooking}
-                className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
+                onClick={handleCreateBooking}
+                disabled={isLoading}
+                className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Confirm Booking
+                {isLoading ? (
+                  <span className="flex items-center justify-center">
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Processing...
+                  </span>
+                ) : (
+                  'Proceed to Payment'
+                )}
               </button>
             </div>
           </div>

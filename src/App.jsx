@@ -1,6 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { SearchProvider } from './context/SearchContext';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
 import Navbar from './components/Navbar/Navbar';
 import Home from './pages/Home/Home';
 import Register from './pages/Register/Register';
@@ -13,7 +15,13 @@ import AllSchedules from './pages/AllSchedules';
 import UsersPage from './pages/UsersPage';
 import SearchResults from './pages/SearchResults';
 import BusDetails from './pages/BusDetails';
+import BookingSummary from './pages/BookingSummary';
+import BookingConfirmation from './pages/BookingConfirmation';
 import AdminRoute from './components/AdminRoute';
+import ProtectedRoute from './components/ProtectedRoute';
+
+// Initialize Stripe
+const stripePromise = loadStripe('pk_test_51H...'); // Replace with your actual publishable key
 
 function App() {
   return (
@@ -29,6 +37,18 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/search-results" element={<SearchResults />} />
                 <Route path="/bus/:scheduleId" element={<BusDetails />} />
+                <Route path="/booking-summary" element={
+                  <ProtectedRoute>
+                    <Elements stripe={stripePromise}>
+                      <BookingSummary />
+                    </Elements>
+                  </ProtectedRoute>
+                } />
+                <Route path="/booking-confirmation" element={
+                  <ProtectedRoute>
+                    <BookingConfirmation />
+                  </ProtectedRoute>
+                } />
                 
                 {/* Admin Routes */}
                 <Route path="/admin" element={
