@@ -13,6 +13,8 @@ import ManageBuses from './pages/ManageBuses';
 import ManageSchedules from './pages/ManageSchedules';
 import AllSchedules from './pages/AllSchedules';
 import UsersPage from './pages/UsersPage';
+import ViewBookings from './pages/ViewBookings';
+import MyBookings from './pages/MyBookings';
 import SearchResults from './pages/SearchResults';
 import BusDetails from './pages/BusDetails';
 import BookingSummary from './pages/BookingSummary';
@@ -44,9 +46,19 @@ function App() {
                     </Elements>
                   </ProtectedRoute>
                 } />
+                <Route path="/booking-confirmation/:bookingId" element={
+                  <ProtectedRoute>
+                    <BookingConfirmation />
+                  </ProtectedRoute>
+                } />
                 <Route path="/booking-confirmation" element={
                   <ProtectedRoute>
                     <BookingConfirmation />
+                  </ProtectedRoute>
+                } />
+                <Route path="/my-bookings" element={
+                  <ProtectedRoute>
+                    <MyBookings />
                   </ProtectedRoute>
                 } />
                 
@@ -61,6 +73,7 @@ function App() {
                   <Route path="schedules/:busId" element={<ManageSchedules />} />
                   <Route path="all-schedules" element={<AllSchedules />} />
                   <Route path="users" element={<UsersPage />} />
+                  <Route path="view-bookings" element={<ViewBookings />} />
                 </Route>
               </Routes>
             </main>

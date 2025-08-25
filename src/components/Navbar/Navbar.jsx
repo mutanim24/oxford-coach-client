@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../hooks/useAuth';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -18,7 +18,7 @@ const Navbar = () => {
             <div className="ml-10 flex items-baseline space-x-4">
               <Link to="/" className="text-gray-800 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Home</Link>
               {user ? (
-                <Link to="/bookings" className="text-gray-800 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">My Bookings</Link>
+                <Link to="/my-bookings" className="text-gray-800 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">My Bookings</Link>
               ) : (
                 <Link to="/login" className="text-gray-800 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">My Bookings</Link>
               )}
@@ -56,7 +56,7 @@ const Navbar = () => {
               <li><Link to="/" className="text-gray-800 hover:text-green-600 transition-colors">Home</Link></li>
               {user ? (
                 <>
-                  <li><Link to="/bookings" className="text-gray-800 hover:text-green-600 transition-colors">My Bookings</Link></li>
+                  <li><Link to="/my-bookings" className="text-gray-800 hover:text-green-600 transition-colors">My Bookings</Link></li>
                   <li>
                     <div className="flex items-center justify-between">
                       <span className="text-gray-700">Welcome, {user.name}</span>

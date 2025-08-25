@@ -56,12 +56,15 @@ const CheckoutForm = ({ bookingId, amount, onPaymentSuccess, onPaymentError }) =
         onPaymentError(paymentError);
       } else {
         // Payment succeeded, confirm it on the server
-        const response = await axios.post(
-          'http://localhost:5000/api/payments/confirm-payment',
-          { paymentIntentId: paymentIntent.id }
+        const bookingResponse = await axios.post(
+          'http://localhost:5000/api/bookings/confirm',
+          { 
+            bookingId: bookingId,
+            paymentIntentId: paymentIntent.id 
+          }
         );
         
-        onPaymentSuccess(response.data.booking);
+        onPaymentSuccess(bookingResponse.data.booking);
       }
     } catch (err) {
       console.error('Error processing payment:', err);

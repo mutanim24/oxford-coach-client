@@ -41,6 +41,12 @@ const AdminDashboard = () => {
           >
             Manage Users
           </Link>
+          <Link 
+            to="/admin/view-bookings" 
+            className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition-colors"
+          >
+            View All Bookings
+          </Link>
         </div>
       </div>
     </div>

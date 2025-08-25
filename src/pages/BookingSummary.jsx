@@ -1,20 +1,20 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import scheduleService from '../services/scheduleService';
+import bookingService from '../services/bookingService';
 import CheckoutForm from '../components/PaymentForm/CheckoutForm';
 
 const BookingSummary = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
   const [bookingData, setBookingData] = useState(null);
   const [scheduleDetails, setScheduleDetails] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [bookingId, setBookingId] = useState(null);
   const [showPaymentForm, setShowPaymentForm] = useState(false);
-  const [paymentSuccess, setPaymentSuccess] = useState(false);
 
   useEffect(() => {
     // Check if user is authenticated
@@ -64,22 +64,15 @@ const BookingSummary = () => {
         userId: user._id
       };
 
-      // Make API call to create the booking
-      const response = await fetch('http://localhost:5000/api/bookings', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.token}`
-        },
-        body: JSON.stringify(bookingPayload)
-      });
+      // Make API call to create the booking using the booking service
+      const response = await bookingService.createBooking(bookingPayload);
 
-      if (!response.ok) {
-        throw new Error('Failed to create booking');
+      if (!response.success) {
+        throw new Error(response.message || 'Failed to create booking');
       }
 
-      const booking = await response.json();
-      setBookingId(booking.booking._id);
+      const booking = response.booking;
+      setBookingId(booking._id);
       setShowPaymentForm(true);
     } catch (err) {
       console.error('Error creating booking:', err);
@@ -90,8 +83,7 @@ const BookingSummary = () => {
   };
 
   const handlePaymentSuccess = (booking) => {
-    setPaymentSuccess(true);
-    navigate('/booking-confirmation', { 
+    navigate(`/booking-confirmation/${booking._id}`, { 
       state: { 
         bookingData: {
           ...booking,

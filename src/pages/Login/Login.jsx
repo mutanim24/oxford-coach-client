@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../hooks/useAuth';
 import AuthForm from '../../components/AuthForm/AuthForm';
 
 /**
@@ -48,11 +48,11 @@ const Login = () => {
         navigate(from, { replace: true });
       } else {
         // Login failed
-        setError(result.error || 'Login failed');
+        setError(result.message || 'Login failed');
       }
     } catch (err) {
       console.error('Login error:', err);
-      setError('An error occurred during login');
+      setError('An error occurred during login. Please try again.');
     } finally {
       setLoading(false);
     }

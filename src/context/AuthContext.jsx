@@ -1,112 +1,182 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { createContext, useReducer, useEffect } from 'react';
+import { cleanupInvalidLocalStorage, safeGetLocalStorage, hasValidAuthData } from '../utils/localStorageUtils';
+import { authReducer, initialState } from '../reducers/authReducer';
+import { AUTH_SUCCESS, AUTH_ERROR, LOGOUT, CLEAR_ERROR, SET_LOADING } from '../constants/authConstants';
 
+// Create the AuthContext
 const AuthContext = createContext();
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
-
+// AuthProvider component
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token'));
-  const [loading, setLoading] = useState(true);
+  const [state, dispatch] = useReducer(authReducer, initialState);
 
+  // Load user on app start
   useEffect(() => {
-    if (token) {
-      // Set default auth header
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    // Clean up any invalid localStorage items first
+    cleanupInvalidLocalStorage();
+    
+    if (hasValidAuthData()) {
+      const token = localStorage.getItem('token');
+      const user = safeGetLocalStorage('user');
       
-      // Try to get user info from token
-      try {
-        const decoded = JSON.parse(atob(token.split('.')[1]));
-        setUser(decoded.user);
-      } catch (error) {
-        console.error('Error decoding token:', error);
-        logout();
+      if (token && user) {
+        dispatch({
+          type: AUTH_SUCCESS,
+          payload: { user, token }
+        });
+      } else {
+        dispatch({ type: SET_LOADING, payload: false });
       }
+    } else {
+      dispatch({ type: SET_LOADING, payload: false });
     }
-    setLoading(false);
-  }, [token]);
+  }, []);
 
-  const login = async (userData) => {
+  // Login function
+  const login = async (credentials) => {
+    dispatch({ type: SET_LOADING, payload: true });
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', userData);
-      const { token: newToken, user: userInfo } = response.data;
-      
-      // Store token in localStorage
-      localStorage.setItem('token', newToken);
-      
-      // Set token in axios headers
-      axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
-      
-      // Set user state
-      setToken(newToken);
-      setUser(userInfo);
-      
-      return { success: true };
+      // Replace with your actual API call
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(credentials)
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Ensure data and data.user exist before storing
+        if (data && data.user && data.token) {
+          // Store token as plain string
+          localStorage.setItem('token', data.token);
+          // Store user object as JSON string
+          localStorage.setItem('user', JSON.stringify(data.user));
+          
+          dispatch({
+            type: AUTH_SUCCESS,
+            payload: {
+              user: data.user,
+              token: data.token
+            }
+          });
+          
+          return { success: true };
+        } else {
+          // Handle cases where response is ok but data is incomplete
+          dispatch({
+            type: AUTH_ERROR,
+            payload: 'Invalid response data from server'
+          });
+          return { success: false, message: 'Invalid response data from server' };
+        }
+      } else {
+        // Handle non-OK responses (like 400)
+        const errorMessage = data && data.message ? data.message : 'Login failed';
+        dispatch({
+          type: AUTH_ERROR,
+          payload: errorMessage
+        });
+        return { success: false, message: errorMessage };
+      }
     } catch (error) {
       console.error('Login error:', error);
-      return { 
-        success: false, 
-        error: error.response?.data?.error || 'Login failed' 
-      };
+      dispatch({
+        type: AUTH_ERROR,
+        payload: 'Network error. Please try again.'
+      });
+      return { success: false, message: 'Network error. Please try again.' };
     }
   };
 
+  // Register function
   const register = async (userData) => {
+    dispatch({ type: SET_LOADING, payload: true });
     try {
-      console.log('Sending registration request with data:', userData);
-      const response = await axios.post('http://localhost:5000/api/auth/register', userData);
-      console.log('Registration response:', response.data);
-      
-      // Return the response data directly on success
-      return response.data;
+      // Replace with your actual API call
+      const response = await fetch('http://localhost:5000/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(userData)
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Ensure data and data.user exist before storing
+        if (data && data.user && data.token) {
+          // Store token as plain string
+          localStorage.setItem('token', data.token);
+          // Store user object as JSON string
+          localStorage.setItem('user', JSON.stringify(data.user));
+          
+          dispatch({
+            type: AUTH_SUCCESS,
+            payload: {
+              user: data.user,
+              token: data.token
+            }
+          });
+          
+          return { success: true };
+        } else {
+          // Handle cases where response is ok but data is incomplete
+          dispatch({
+            type: AUTH_ERROR,
+            payload: 'Invalid response data from server'
+          });
+          return { success: false, message: 'Invalid response data from server' };
+        }
+      } else {
+        // Handle non-OK responses
+        const errorMessage = data && data.message ? data.message : 'Registration failed';
+        dispatch({
+          type: AUTH_ERROR,
+          payload: errorMessage
+        });
+        return { success: false, message: errorMessage };
+      }
     } catch (error) {
       console.error('Registration error:', error);
-      if (error.response) {
-        console.error('Error response data:', error.response.data);
-        console.error('Error response status:', error.response.status);
-        console.error('Error response headers:', error.response.headers);
-        
-        // Log the raw response text to see if there's additional info
-        if (error.response.data) {
-          console.error('Raw error response:', JSON.stringify(error.response.data));
-        }
-      } else if (error.request) {
-        console.error('Error request:', error.request);
-      } else {
-        console.error('Error message:', error.message);
-      }
-      // Throw the error so the calling component can handle it
-      throw error;
+      dispatch({
+        type: AUTH_ERROR,
+        payload: 'Network error. Please try again.'
+      });
+      return { success: false, message: 'Network error. Please try again.' };
     }
   };
 
+  // Logout function
   const logout = () => {
-    // Remove token from localStorage
     localStorage.removeItem('token');
-    
-    // Remove token from axios headers
-    delete axios.defaults.headers.common['Authorization'];
-    
-    // Clear state
-    setToken(null);
-    setUser(null);
+    localStorage.removeItem('user');
+    dispatch({ type: LOGOUT });
   };
 
-  const value = {
-    user,
-    token,
+  // Clear error
+  const clearError = () => {
+    dispatch({ type: CLEAR_ERROR });
+  };
+
+  // Context value
+  const contextValue = {
+    ...state,
     login,
     register,
     logout,
-    loading
+    clearError
   };
 
   return (
-    <AuthContext.Provider value={value}>
-      {!loading && children}
+    <AuthContext.Provider value={contextValue}>
+      {children}
     </AuthContext.Provider>
   );
 };
+
+// Export the context directly for useContext hook
+export { AuthContext };
