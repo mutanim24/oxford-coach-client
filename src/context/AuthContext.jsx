@@ -1,112 +1,197 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { createContext, useReducer, useEffect } from 'react';
+import { cleanupInvalidLocalStorage, safeGetLocalStorage, hasValidAuthData } from '../utils/localStorageUtils';
+import { authReducer, initialState } from '../reducers/authReducer';
+import { AUTH_SUCCESS, AUTH_ERROR, LOGOUT, CLEAR_ERROR, SET_LOADING } from '../constants/authConstants';
+import api from '../services/api';
 
+// Create the AuthContext
 const AuthContext = createContext();
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
-
+// AuthProvider component
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token'));
-  const [loading, setLoading] = useState(true);
+  const [state, dispatch] = useReducer(authReducer, initialState);
 
+  // Load user on app start
   useEffect(() => {
-    if (token) {
-      // Set default auth header
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    // Clean up any invalid localStorage items first
+    cleanupInvalidLocalStorage();
+    
+    if (hasValidAuthData()) {
+      // Retrieve token as plain string
+      const token = localStorage.getItem('token');
+      // Retrieve user object and parse it from JSON
+      const user = safeGetLocalStorage('user');
       
-      // Try to get user info from token
-      try {
-        const decoded = JSON.parse(atob(token.split('.')[1]));
-        setUser(decoded.user);
-      } catch (error) {
-        console.error('Error decoding token:', error);
-        logout();
+      if (token && user) {
+        dispatch({
+          type: AUTH_SUCCESS,
+          payload: { user, token }
+        });
+      } else {
+        dispatch({ type: SET_LOADING, payload: false });
       }
+    } else {
+      dispatch({ type: SET_LOADING, payload: false });
     }
-    setLoading(false);
-  }, [token]);
+  }, []);
 
-  const login = async (userData) => {
+  // Login function
+  const login = async (credentials) => {
+    dispatch({ type: SET_LOADING, payload: true });
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', userData);
-      const { token: newToken, user: userInfo } = response.data;
-      
-      // Store token in localStorage
-      localStorage.setItem('token', newToken);
-      
-      // Set token in axios headers
-      axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
-      
-      // Set user state
-      setToken(newToken);
-      setUser(userInfo);
-      
-      return { success: true };
+      const response = await api.post('/auth/login', credentials);
+      const data = response.data;
+
+      // For axios, successful responses have status 200
+      if (data && data.user && data.token) {
+        // Store token as plain string
+        localStorage.setItem('token', data.token);
+        // Store user object as JSON string
+        localStorage.setItem('user', JSON.stringify(data.user));
+        
+        dispatch({
+          type: AUTH_SUCCESS,
+          payload: {
+            user: data.user,
+            token: data.token
+          }
+        });
+        
+        return { success: true };
+      } else {
+        // Handle cases where response is ok but data is incomplete
+        dispatch({
+          type: AUTH_ERROR,
+          payload: 'Invalid response data from server'
+        });
+        return { success: false, message: 'Invalid response data from server' };
+      }
     } catch (error) {
       console.error('Login error:', error);
-      return { 
-        success: false, 
-        error: error.response?.data?.error || 'Login failed' 
-      };
-    }
-  };
-
-  const register = async (userData) => {
-    try {
-      console.log('Sending registration request with data:', userData);
-      const response = await axios.post('http://localhost:5000/api/auth/register', userData);
-      console.log('Registration response:', response.data);
       
-      // Return the response data directly on success
-      return response.data;
-    } catch (error) {
-      console.error('Registration error:', error);
+      // Handle axios error responses
+      let errorMessage = 'Login failed';
       if (error.response) {
-        console.error('Error response data:', error.response.data);
-        console.error('Error response status:', error.response.status);
-        console.error('Error response headers:', error.response.headers);
-        
-        // Log the raw response text to see if there's additional info
-        if (error.response.data) {
-          console.error('Raw error response:', JSON.stringify(error.response.data));
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        if (error.response.data && error.response.data.errors) {
+          // Handle validation errors
+          errorMessage = error.response.data.errors.map(err => err.msg).join(', ');
+        } else if (error.response.data && error.response.data.error) {
+          // Handle specific errors
+          errorMessage = error.response.data.error;
+        } else if (error.response.data && error.response.data.message) {
+          // Handle other error messages
+          errorMessage = error.response.data.message;
         }
       } else if (error.request) {
-        console.error('Error request:', error.request);
+        // The request was made but no response was received
+        errorMessage = 'Network error. Please check your connection.';
       } else {
-        console.error('Error message:', error.message);
+        // Something happened in setting up the request that triggered an Error
+        errorMessage = 'An error occurred. Please try again.';
       }
-      // Throw the error so the calling component can handle it
-      throw error;
+      
+      dispatch({
+        type: AUTH_ERROR,
+        payload: errorMessage
+      });
+      return { success: false, message: errorMessage };
     }
   };
 
-  const logout = () => {
-    // Remove token from localStorage
-    localStorage.removeItem('token');
-    
-    // Remove token from axios headers
-    delete axios.defaults.headers.common['Authorization'];
-    
-    // Clear state
-    setToken(null);
-    setUser(null);
+  // Register function
+  const register = async (userData) => {
+    dispatch({ type: SET_LOADING, payload: true });
+    try {
+      const response = await api.post('/auth/register', userData);
+      const data = response.data;
+
+      // For axios, successful responses have status 200
+      if (data && data.user && data.token) {
+        // Store token as plain string
+        localStorage.setItem('token', data.token);
+        // Store user object as JSON string
+        localStorage.setItem('user', JSON.stringify(data.user));
+        
+        dispatch({
+          type: AUTH_SUCCESS,
+          payload: {
+            user: data.user,
+            token: data.token
+          }
+        });
+        
+        return { success: true };
+      } else {
+        // Handle cases where response is ok but data is incomplete
+        dispatch({
+          type: AUTH_ERROR,
+          payload: 'Invalid response data from server'
+        });
+        return { success: false, message: 'Invalid response data from server' };
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      
+      // Handle axios error responses
+      let errorMessage = 'Registration failed';
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        if (error.response.data && error.response.data.errors) {
+          // Handle validation errors
+          errorMessage = error.response.data.errors.map(err => err.msg).join(', ');
+        } else if (error.response.data && error.response.data.error) {
+          // Handle specific errors like email already in use
+          errorMessage = error.response.data.error;
+        } else if (error.response.data && error.response.data.message) {
+          // Handle other error messages
+          errorMessage = error.response.data.message;
+        }
+      } else if (error.request) {
+        // The request was made but no response was received
+        errorMessage = 'Network error. Please check your connection.';
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        errorMessage = 'An error occurred. Please try again.';
+      }
+      
+      dispatch({
+        type: AUTH_ERROR,
+        payload: errorMessage
+      });
+      return { success: false, message: errorMessage };
+    }
   };
 
-  const value = {
-    user,
-    token,
+  // Logout function
+  const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    dispatch({ type: LOGOUT });
+  };
+
+  // Clear error
+  const clearError = () => {
+    dispatch({ type: CLEAR_ERROR });
+  };
+
+  // Context value
+  const contextValue = {
+    ...state,
     login,
     register,
     logout,
-    loading
+    clearError
   };
 
   return (
-    <AuthContext.Provider value={value}>
-      {!loading && children}
+    <AuthContext.Provider value={contextValue}>
+      {children}
     </AuthContext.Provider>
   );
 };
+
+// Export the context directly for useContext hook
+export { AuthContext };

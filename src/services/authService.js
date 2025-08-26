@@ -1,11 +1,11 @@
-import axios from 'axios';
+import api from './api';
 
-const API_URL = 'http://localhost:5000/api/auth';
+const API_URL = '/auth';
 
 // Register user
 export const registerUser = async (userData) => {
   try {
-    const response = await axios.post(`${API_URL}/register`, userData);
+    const response = await api.post(`${API_URL}/register`, userData);
     return response.data;
   } catch (error) {
     console.error('Registration service error:', error);
@@ -16,7 +16,7 @@ export const registerUser = async (userData) => {
 // Login user
 export const loginUser = async (credentials) => {
   try {
-    const response = await axios.post(`${API_URL}/login`, credentials);
+    const response = await api.post(`${API_URL}/login`, credentials);
     return response.data;
   } catch (error) {
     console.error('Login service error:', error);
@@ -27,7 +27,7 @@ export const loginUser = async (credentials) => {
 // Get user profile (protected route example)
 export const getUserProfile = async () => {
   try {
-    const response = await axios.get(`${API_URL}/profile`);
+    const response = await api.get(`${API_URL}/profile`);
     return response.data;
   } catch (error) {
     console.error('Get user profile error:', error);
@@ -40,6 +40,6 @@ export const logoutUser = () => {
   // Clear localStorage
   localStorage.removeItem('token');
   
-  // Remove auth header
-  delete axios.defaults.headers.common['Authorization'];
+  // Note: We don't need to remove the auth header from the api instance
+  // as the interceptor will automatically add the token if it exists
 };

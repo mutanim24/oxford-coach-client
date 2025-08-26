@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../hooks/useAuth';
 import AuthForm from '../../components/AuthForm/AuthForm';
 
 /**
@@ -42,31 +42,20 @@ const Register = () => {
     console.log('Form data being submitted:', formData);
     
     try {
-      // Call the register function which now returns response data directly
-      await register(formData);
+      // Call the register function which now returns response data
+      const result = await register(formData);
       
-      // Registration successful, show success message and navigate to login
-      alert('Registration successful! Please log in.');
-      navigate('/login');
+      if (result.success) {
+        // Registration successful, show success message and navigate to login
+        alert('Registration successful! Please log in.');
+        navigate('/login');
+      } else {
+        // Registration failed
+        setError(result.message || 'Registration failed');
+      }
     } catch (err) {
       console.error('Registration error:', err);
-      // Handle specific error messages from the backend
-      if (err.response && err.response.data && err.response.data.error) {
-        const errorMessage = err.response.data.error;
-        
-        // Provide more user-friendly error messages
-        if (errorMessage.includes('already exists')) {
-          setError('An account with this email already exists. Please try a different email or login.');
-        } else if (errorMessage.includes('password')) {
-          setError('Password does not meet requirements. Please try again.');
-        } else if (errorMessage.includes('email')) {
-          setError('Please enter a valid email address.');
-        } else {
-          setError(errorMessage);
-        }
-      } else {
-        setError('An error occurred during registration. Please try again.');
-      }
+      setError('An error occurred during registration. Please try again.');
     } finally {
       setLoading(false);
     }
