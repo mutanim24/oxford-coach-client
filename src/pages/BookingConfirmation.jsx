@@ -2,8 +2,9 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import Ticket from '../components/Ticket/Ticket';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+import domtoimage from 'dom-to-image';
+import { jsPDF } from 'jspdf';
+import api from '../services/api';
 
 const BookingConfirmation = () => {
   const navigate = useNavigate();
@@ -19,33 +20,36 @@ const BookingConfirmation = () => {
     if (!ticketRef.current) return;
     
     try {
-      const canvas = await html2canvas(ticketRef.current, {
-        scale: 2,
-        useCORS: true,
-        scrollX: 0,
-        scrollY: 0
+      // Convert the ticket div to a PNG image using dom-to-image
+      const dataUrl = await domtoimage.toPng(ticketRef.current, { 
+        quality: 0.95,
+        backgroundColor: '#ffffff'
       });
       
-      const imgData = canvas.toDataURL('image/png');
+      // Create a new PDF document
       const pdf = new jsPDF('p', 'mm', 'a4');
       
-      const imgWidth = 210;
-      const pageHeight = 295;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let heightLeft = imgHeight;
-      let position = 0;
+      // Create an image to get dimensions
+      const img = new Image();
+      img.src = dataUrl;
       
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
+      img.onload = () => {
+        // Calculate dimensions to fit the PDF page
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (img.height * pdfWidth) / img.width;
+        
+        // Add the image to the PDF
+        pdf.addImage(dataUrl, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        
+        // Save the PDF
+        pdf.save(`ticket-${bookingData.pnrNumber}.pdf`);
+      };
       
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-      }
+      img.onerror = (error) => {
+        console.error('Error loading image:', error);
+        alert('Failed to generate PDF. Please try again.');
+      };
       
-      pdf.save(`ticket-${bookingData.pnrNumber}.pdf`);
     } catch (error) {
       console.error('Error generating PDF:', error);
       alert('Failed to download PDF. Please try again.');
@@ -57,11 +61,7 @@ const BookingConfirmation = () => {
     if (bookingId) {
       const fetchBookingData = async () => {
         try {
-          const response = await fetch(`http://localhost:5000/api/bookings/${bookingId}`, {
-            headers: {
-              'Authorization': `Bearer ${user.token}`
-            }
-          });
+          const response = await api.get(`/bookings/${bookingId}`);
           
           if (response.ok) {
             const data = await response.json();

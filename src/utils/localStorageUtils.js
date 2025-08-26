@@ -32,7 +32,16 @@ export const cleanupInvalidLocalStorage = () => {
     try {
       const item = localStorage.getItem(key);
       if (item) {
-        JSON.parse(item); // Try to parse
+        if (key === 'token') {
+          // For JWT tokens, just check if it's a non-empty string
+          // JWT tokens are base64 encoded, not JSON
+          if (typeof item !== 'string' || item.trim() === '') {
+            throw new Error('Token is not a valid string');
+          }
+        } else {
+          // For other items, try to parse as JSON
+          JSON.parse(item);
+        }
       }
     } catch (error) {
       console.error(`Invalid localStorage item found for key "${key}", removing it.`, error);

@@ -76,7 +76,25 @@ const BookingSummary = () => {
       setShowPaymentForm(true);
     } catch (err) {
       console.error('Error creating booking:', err);
-      setError('Failed to create booking. Please try again.');
+      
+      // Handle specific error messages
+      if (err.response && err.response.status === 409) {
+        if (err.response.data && err.response.data.message) {
+          setError(err.response.data.message);
+        } else {
+          setError('One or more of the selected seats are already booked. Please go back and select different seats.');
+        }
+      } else if (err.response && err.response.status === 400) {
+        if (err.response.data && err.response.data.message) {
+          setError(err.response.data.message);
+        } else {
+          setError('Invalid booking data. Please try again.');
+        }
+      } else if (err.response && err.response.status === 500) {
+        setError('Server error. Please try again later.');
+      } else {
+        setError('Failed to create booking. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }

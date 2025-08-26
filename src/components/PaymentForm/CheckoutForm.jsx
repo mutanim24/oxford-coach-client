@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import axios from 'axios';
+import api from '../../services/api';
 
 const CheckoutForm = ({ bookingId, amount, onPaymentSuccess, onPaymentError }) => {
   const stripe = useStripe();
@@ -13,15 +13,26 @@ const CheckoutForm = ({ bookingId, amount, onPaymentSuccess, onPaymentError }) =
     // Create a payment intent when the component mounts
     const createPaymentIntent = async () => {
       try {
-        const response = await axios.post(
-          'http://localhost:5000/api/payments/create-payment-intent',
+        const response = await api.post(
+          '/payments/create-payment-intent',
           { bookingId }
         );
         
         setClientSecret(response.data.clientSecret);
       } catch (err) {
         console.error('Error creating payment intent:', err);
-        setError('Failed to initialize payment. Please try again.');
+        
+        // Handle specific error messages
+        if (err.response && err.response.status === 500) {
+          if (err.response.data && err.response.data.message) {
+            setError(err.response.data.message);
+          } else {
+            setError('Payment system is temporarily unavailable. Please try again later.');
+          }
+        } else {
+          setError('Failed to initialize payment. Please try again.');
+        }
+        
         onPaymentError(err);
       }
     };
@@ -56,8 +67,8 @@ const CheckoutForm = ({ bookingId, amount, onPaymentSuccess, onPaymentError }) =
         onPaymentError(paymentError);
       } else {
         // Payment succeeded, confirm it on the server
-        const bookingResponse = await axios.post(
-          'http://localhost:5000/api/bookings/confirm',
+        const bookingResponse = await api.post(
+          '/bookings/confirm',
           { 
             bookingId: bookingId,
             paymentIntentId: paymentIntent.id 
@@ -91,6 +102,8 @@ const CheckoutForm = ({ bookingId, amount, onPaymentSuccess, onPaymentError }) =
         iconColor: '#dc3545',
       },
     },
+    // Hide postal code field for test cards
+    hidePostalCode: true,
   };
 
   return (

@@ -23,7 +23,7 @@ import AdminRoute from './components/AdminRoute';
 import ProtectedRoute from './components/ProtectedRoute';
 
 // Initialize Stripe
-const stripePromise = loadStripe('pk_test_51H...'); // Replace with your actual publishable key
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY); // Replace with your actual publishable key
 
 function App() {
   return (
