@@ -6,9 +6,12 @@ import Footer from '../../components/Footer/Footer';
 import Services from './Services';
 import HowItWorks from './HowItWorks';
 import WhyChooseUs from './WhyChooseUs';
+import TopRoutes from './TopRoutes';
+import PlatformFeatures from './PlatformFeatures';
+import Partners from './Partners';
 
 const Home = () => {
-  // How It Works Section Data
+  // Data for the "How It Works" section
   const howItWorksData = [
     {
       icon: (
@@ -39,7 +42,7 @@ const Home = () => {
     }
   ];
 
-  // Why Choose Us Section Data
+  // Data for the "Why Choose Us" section
   const whyChooseUsData = [
     {
       icon: (
@@ -79,6 +82,9 @@ const Home = () => {
       {/* Hero Section */}
       <Hero />
 
+      {/* Top Routes Section */}
+      <TopRoutes />
+
       {/* Why Choose Us Section */}
       <WhyChooseUs />
 
@@ -87,6 +93,12 @@ const Home = () => {
 
       {/* How It Works Section */}
       <HowItWorks />
+
+      {/* Platform Features Section */}
+      <PlatformFeatures />
+
+
+      <Partners />
 
       {/* Footer Section */}
       <Footer />
