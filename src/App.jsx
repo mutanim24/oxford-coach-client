@@ -14,6 +14,7 @@ import ManageSchedules from './pages/ManageSchedules';
 import AllSchedules from './pages/AllSchedules';
 import UsersPage from './pages/UsersPage';
 import ViewBookings from './pages/ViewBookings';
+import BookingPayment from './pages/BookingPayment';
 import MyBookings from './pages/MyBookings';
 import SearchResults from './pages/SearchResults';
 import BusDetails from './pages/BusDetails';
@@ -74,6 +75,7 @@ function App() {
                   <Route path="all-schedules" element={<AllSchedules />} />
                   <Route path="users" element={<UsersPage />} />
                   <Route path="view-bookings" element={<ViewBookings />} />
+                  <Route path="booking-payment" element={<BookingPayment />} />
                 </Route>
               </Routes>
             </main>

@@ -46,9 +46,17 @@ const Register = () => {
       const result = await register(formData);
       
       if (result.success) {
-        // Registration successful, show success message and navigate to login
-        alert('Registration successful! Please log in.');
-        navigate('/login');
+        // Registration successful, redirect based on user role
+        const user = result.user || JSON.parse(localStorage.getItem('user'));
+        
+        if (user && user.role === 'admin') {
+          // Redirect admin users to admin dashboard
+          navigate('/admin', { replace: true });
+        } else {
+          // Redirect regular users to login
+          alert('Registration successful! Please log in.');
+          navigate('/login');
+        }
       } else {
         // Registration failed
         setError(result.message || 'Registration failed');

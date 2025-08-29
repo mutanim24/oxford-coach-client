@@ -160,7 +160,7 @@ const MyBookings = () => {
                       <div>
                         <span className="font-medium">{booking.bus.name}</span> • {booking.selectedSeats.length} seat{booking.selectedSeats.length !== 1 ? 's' : ''}
                       </div>
-                      <div className="font-medium">₹{booking.totalFare}</div>
+                      <div className="font-medium">${booking.totalFare}</div>
                     </div>
                     <div className="mt-4">
                       <Button

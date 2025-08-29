@@ -66,6 +66,32 @@ const UsersPage = () => {
     }
   };
 
+  const handleMakeAdmin = async (userId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:5000/api/users/${userId}/make-admin`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to make user admin');
+      }
+      
+      // Update the user in the state immediately
+      setUsers(users.map(user => 
+        user._id === userId ? { ...user, role: 'admin' } : user
+      ));
+      setToast({ message: data.message || 'User role updated to admin successfully', type: 'success' });
+    } catch (err) {
+      setToast({ message: err.message, type: 'error' });
+    }
+  };
+
   if (loading) {
     return <div className="flex justify-center items-center h-64">Loading...</div>;
   }
@@ -123,6 +149,9 @@ const UsersPage = () => {
                 Role
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Update Role
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
@@ -130,7 +159,7 @@ const UsersPage = () => {
           <tbody className="bg-white divide-y divide-gray-200">
             {users.length === 0 ? (
               <tr>
-                <td colSpan="4" className="px-6 py-4 text-center text-gray-500">
+                <td colSpan="5" className="px-6 py-4 text-center text-gray-500">
                   No users found
                 </td>
               </tr>
@@ -155,6 +184,20 @@ const UsersPage = () => {
                     }`}>
                       {user.role}
                     </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    {user.role !== 'admin' && (
+                      <button
+                        onClick={() => {
+                          if (window.confirm('Are you sure you want to make this user an admin?')) {
+                            handleMakeAdmin(user._id);
+                          }
+                        }}
+                        className="text-blue-600 hover:text-blue-900"
+                      >
+                        Make Admin
+                      </button>
+                    )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button
