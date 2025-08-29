@@ -8,6 +8,7 @@ import WhyChooseUs from './components/WhyChooseUs';
 import TopRoutes from './components/TopRoutes';
 import Services from './components/Services';
 import PlatformFeatures from './components/PlatformFeatures';
+import Partners from './components/Partners';
 
 const Home = () => {
 
@@ -74,6 +75,9 @@ const Home = () => {
 
       {/* Platform Features Section */}
       <PlatformFeatures />
+
+      {/* Partners Section */}
+      <Partners />
 
       {/* Footer Section */}
       <Footer />
