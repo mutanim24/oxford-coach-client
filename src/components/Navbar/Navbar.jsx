@@ -50,7 +50,6 @@ const Navbar = () => {
             ) : (
               <div className="flex items-center space-x-2">
                 <Link to="/login" className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-md">Login</Link>
-                <Link to="/register" className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg text-sm font-medium transition-colors">Register</Link>
               </div>
             )}
           </div>
@@ -111,7 +110,6 @@ const Navbar = () => {
                   ) : (
                     <div className="space-y-4">
                       <Link to="/login" onClick={closeMobileMenu} className="block w-full text-center bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">Login</Link>
-                      <Link to="/register" onClick={closeMobileMenu} className="block w-full text-center bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg font-medium transition-colors">Register</Link>
                     </div>
                   )}
                 </li>
