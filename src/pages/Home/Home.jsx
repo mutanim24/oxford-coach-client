@@ -4,8 +4,12 @@ import Hero from '../../components/Hero/Hero';
 import InfoCard from '../../components/InfoCard/InfoCard';
 import Footer from '../../components/Footer/Footer';
 import HowItWorks from './components/HowItWorks';
+import WhyChooseUs from './components/WhyChooseUs';
+import TopRoutes from './components/TopRoutes';
 
 const Home = () => {
+
+
 
   // Services Section Data
   const servicesData = [
@@ -54,6 +58,9 @@ const Home = () => {
       {/* Hero Section */}
       <Hero />
 
+      {/* Top Routes Section */}
+      <TopRoutes />
+
       {/* Services Section */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
@@ -71,28 +78,11 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Why Choose Us Section */}
-      <WhyChooseUs />
-
       {/* How It Works Section */}
       <HowItWorks />
 
       {/* Why Choose Us Section */}
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12 text-green-600">Why Choose Us</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {whyChooseUsData.map((item, index) => (
-              <InfoCard
-                key={index}
-                icon={item.icon}
-                title={item.title}
-                description={item.description}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
+      <WhyChooseUs />
 
       {/* Footer Section */}
       <Footer />
