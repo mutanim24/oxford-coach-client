@@ -1,1 +1,15 @@
 @import "tailwindcss";
+
+/* Make Swiper navigation and pagination match your brand color */
+:root {
+  --swiper-theme-color: #16a34a; /* Tailwind's green-600 */
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  color: var(--swiper-theme-color) !important;
+}
+
+.swiper-pagination-bullet-active {
+  background: var(--swiper-theme-color) !important;
+}
