@@ -6,6 +6,7 @@ import Footer from '../../components/Footer/Footer';
 import HowItWorks from './components/HowItWorks';
 import WhyChooseUs from './components/WhyChooseUs';
 import TopRoutes from './components/TopRoutes';
+import Services from './components/Services';
 
 const Home = () => {
 
@@ -61,28 +62,15 @@ const Home = () => {
       {/* Top Routes Section */}
       <TopRoutes />
 
+      {/* Why Choose Us Section */}
+      <WhyChooseUs />
+
       {/* Services Section */}
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12 text-green-600">Our Services</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {servicesData.map((item, index) => (
-              <InfoCard
-                key={index}
-                icon={item.icon}
-                title={item.title}
-                description={item.description}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
+      <Services />
 
       {/* How It Works Section */}
       <HowItWorks />
 
-      {/* Why Choose Us Section */}
-      <WhyChooseUs />
 
       {/* Footer Section */}
       <Footer />
