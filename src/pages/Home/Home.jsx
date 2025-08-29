@@ -7,6 +7,7 @@ import HowItWorks from './components/HowItWorks';
 import WhyChooseUs from './components/WhyChooseUs';
 import TopRoutes from './components/TopRoutes';
 import Services from './components/Services';
+import PlatformFeatures from './components/PlatformFeatures';
 
 const Home = () => {
 
@@ -71,6 +72,8 @@ const Home = () => {
       {/* How It Works Section */}
       <HowItWorks />
 
+      {/* Platform Features Section */}
+      <PlatformFeatures />
 
       {/* Footer Section */}
       <Footer />
