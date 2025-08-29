@@ -9,6 +9,7 @@ import TopRoutes from './components/TopRoutes';
 import Services from './components/Services';
 import PlatformFeatures from './components/PlatformFeatures';
 import Partners from './components/Partners';
+import Testimonials from './components/Testimonials';
 
 const Home = () => {
 
@@ -64,17 +65,20 @@ const Home = () => {
       {/* Top Routes Section */}
       <TopRoutes />
 
-      {/* Why Choose Us Section */}
-      <WhyChooseUs />
-
       {/* Services Section */}
       <Services />
+
+      {/* Why Choose Us Section */}
+      <WhyChooseUs />
 
       {/* How It Works Section */}
       <HowItWorks />
 
       {/* Platform Features Section */}
       <PlatformFeatures />
+
+      {/* Testimonials Section */}
+      <Testimonials />
 
       {/* Partners Section */}
       <Partners />

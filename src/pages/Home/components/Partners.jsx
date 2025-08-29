@@ -1,5 +1,5 @@
 import React from 'react';
-// import { motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 // 1. Data updated with major UK-based bus companies
 const partnersData = [
