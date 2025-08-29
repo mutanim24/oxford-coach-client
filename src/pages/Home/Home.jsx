@@ -3,38 +3,10 @@ import Navbar from '../../components/Navbar/Navbar';
 import Hero from '../../components/Hero/Hero';
 import InfoCard from '../../components/InfoCard/InfoCard';
 import Footer from '../../components/Footer/Footer';
+import HowItWorks from './components/HowItWorks';
 
 const Home = () => {
-  // How It Works Section Data
-  const howItWorksData = [
-    {
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        </svg>
-      ),
-      title: 'Search',
-      description: 'Find buses that match your travel needs with our easy-to-use search interface.'
-    },
-    {
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      ),
-      title: 'Select',
-      description: 'Choose the best bus and seat that fits your schedule and budget.'
-    },
-    {
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-        </svg>
-      ),
-      title: 'Pay',
-      description: 'Complete your booking securely with multiple payment options.'
-    }
-  ];
+
 
   // Why Choose Us Section Data
   const whyChooseUsData = [
@@ -132,21 +104,7 @@ const Home = () => {
       </section>
       
       {/* How It Works Section */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12 text-green-600">How It Works</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {howItWorksData.map((item, index) => (
-              <InfoCard 
-                key={index}
-                icon={item.icon}
-                title={item.title}
-                description={item.description}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
+      <HowItWorks />
       
       {/* Why Choose Us Section */}
       <section className="py-16 bg-gray-50">
