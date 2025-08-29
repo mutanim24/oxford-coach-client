@@ -1,28 +1,38 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../../hooks/useAuth'; // Make sure this path is correct
+import { motion, AnimatePresence } from 'framer-motion';
+import { FiMenu, FiX } from 'react-icons/fi';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
+  const closeMobileMenu = () => setIsMobileMenuOpen(false);
+
+  const menuVariants = {
+    hidden: { x: '100%' },
+    visible: { x: 0, transition: { duration: 0.3, ease: 'easeInOut' } },
+  };
+
+  const overlayVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { duration: 0.3 } },
+  };
 
   return (
     <div className="navbar bg-white shadow-lg fixed top-0 left-0 right-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           <div className="flex-shrink-0">
-            <Link to="/" className="text-xl font-bold text-green-600 hover:text-green-700">BusGo</Link>
+            <Link to="/" className="text-2xl font-bold text-green-600 hover:text-green-700">BusGo</Link>
           </div>
           
           {/* Desktop Navigation */}
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-4">
-              <Link to="/" className="text-gray-800 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Home</Link>
-              {user ? (
-                <Link to="/my-bookings" className="text-gray-800 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">My Bookings</Link>
-              ) : (
-                <Link to="/login" className="text-gray-800 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">My Bookings</Link>
-              )}
-            </div>
+          <div className="hidden md:flex items-center space-x-6">
+            <Link to="/" className="text-gray-800 hover:text-green-600 font-medium transition-colors">Home</Link>
+            <Link to={user ? "/my-bookings" : "/login"} className="text-gray-800 hover:text-green-600 font-medium transition-colors">My Bookings</Link>
           </div>
           
           {/* Desktop Auth Buttons */}
@@ -32,54 +42,84 @@ const Navbar = () => {
                 <span className="text-gray-700">Welcome, {user.name}</span>
                 <button 
                   onClick={logout}
-                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-md"
                 >
                   Logout
                 </button>
               </div>
             ) : (
               <div className="flex items-center space-x-2">
-                <Link to="/login" className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">Login</Link>
-                <Link to="/register" className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-md text-sm font-medium transition-colors">Register</Link>
+                <Link to="/login" className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-md">Login</Link>
+                <Link to="/register" className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg text-sm font-medium transition-colors">Register</Link>
               </div>
             )}
           </div>
           
           {/* Mobile menu button */}
           <div className="md:hidden">
-            <div tabIndex={0} role="button" className="btn btn-ghost btn-circle">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </div>
-            <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[50] p-2 shadow bg-white rounded-box w-52">
-              <li><Link to="/" className="text-gray-800 hover:text-green-600 transition-colors">Home</Link></li>
-              {user ? (
-                <>
-                  <li><Link to="/my-bookings" className="text-gray-800 hover:text-green-600 transition-colors">My Bookings</Link></li>
-                  <li>
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-700">Welcome, {user.name}</span>
+            <button onClick={toggleMobileMenu} className="btn btn-ghost btn-circle">
+              <FiMenu className="h-6 w-6" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <>
+            {/* Overlay */}
+            <motion.div
+              className="fixed inset-0 bg-black bg-opacity-60 z-40"
+              variants={overlayVariants}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              onClick={closeMobileMenu}
+            />
+            
+            {/* Menu Content */}
+            <motion.div
+              className="fixed top-0 right-0 h-full w-64 bg-white shadow-2xl z-50 p-6"
+              variants={menuVariants}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+            >
+              <div className="flex justify-between items-center mb-10">
+                <span className="text-xl font-bold text-green-600">Menu</span>
+                <button onClick={closeMobileMenu} className="btn btn-ghost btn-circle">
+                  <FiX className="h-6 w-6" />
+                </button>
+              </div>
+
+              <ul className="space-y-6">
+                <li><Link to="/" onClick={closeMobileMenu} className="text-lg text-gray-800 hover:text-green-600 transition-colors">Home</Link></li>
+                <li><Link to={user ? "/my-bookings" : "/login"} onClick={closeMobileMenu} className="text-lg text-gray-800 hover:text-green-600 transition-colors">My Bookings</Link></li>
+                
+                <li className="pt-6 border-t border-gray-200">
+                  {user ? (
+                    <div className="space-y-4">
+                      <div className="text-gray-700">Welcome, {user.name}</div>
                       <button 
-                        onClick={logout}
-                        className="text-red-600 hover:text-red-700 text-sm"
+                        onClick={() => { logout(); closeMobileMenu(); }}
+                        className="w-full text-center bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                       >
                         Logout
                       </button>
                     </div>
-                  </li>
-                </>
-              ) : (
-                <>
-                  <li><Link to="/login" className="text-gray-800 hover:text-green-600 transition-colors">My Bookings</Link></li>
-                  <li><Link to="/login" className="text-gray-800 hover:text-green-600 transition-colors">Login</Link></li>
-                  <li><Link to="/register" className="text-gray-800 hover:text-green-600 transition-colors">Register</Link></li>
-                </>
-              )}
-            </ul>
-          </div>
-        </div>
-      </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <Link to="/login" onClick={closeMobileMenu} className="block w-full text-center bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">Login</Link>
+                      <Link to="/register" onClick={closeMobileMenu} className="block w-full text-center bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg font-medium transition-colors">Register</Link>
+                    </div>
+                  )}
+                </li>
+              </ul>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
