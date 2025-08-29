@@ -43,9 +43,17 @@ const Login = () => {
       const result = await login(formData);
       
       if (result.success) {
-        // Login successful, redirect to the page the user was trying to access or home
-        const from = location.state?.from?.pathname || '/';
-        navigate(from, { replace: true });
+        // Login successful, redirect based on user role
+        const user = result.user || JSON.parse(localStorage.getItem('user'));
+        
+        if (user && user.role === 'admin') {
+          // Redirect admin users to admin dashboard
+          navigate('/admin', { replace: true });
+        } else {
+          // Redirect regular users to the page they were trying to access or home
+          const from = location.state?.from?.pathname || '/';
+          navigate(from, { replace: true });
+        }
       } else {
         // Login failed
         setError(result.message || 'Login failed');

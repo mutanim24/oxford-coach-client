@@ -57,7 +57,7 @@ export const AuthProvider = ({ children }) => {
           }
         });
         
-        return { success: true };
+        return { success: true, user: data.user };
       } else {
         // Handle cases where response is ok but data is incomplete
         dispatch({
@@ -122,7 +122,7 @@ export const AuthProvider = ({ children }) => {
           }
         });
         
-        return { success: true };
+        return { success: true, user: data.user };
       } else {
         // Handle cases where response is ok but data is incomplete
         dispatch({

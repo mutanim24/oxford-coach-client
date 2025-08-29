@@ -33,8 +33,20 @@ const getAllBookings = async () => {
   }
 };
 
+// Get all bookings from BookingV2 collection (admin only)
+const getAllBookingsV2 = async () => {
+  try {
+    const response = await api.get('/bookings/bookingv2');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching all bookings from BookingV2:', error);
+    throw error;
+  }
+};
+
 export default {
   createBooking,
   getUserBookings,
-  getAllBookings
+  getAllBookings,
+  getAllBookingsV2
 };

@@ -55,6 +55,12 @@ const AdminLayout = () => {
           >
             Manage Users
           </Link>
+          <Link 
+            to="/admin/booking-payment" 
+            className={`block px-4 py-2 transition-colors ${getActiveClass('/admin/booking-payment')}`}
+          >
+            Booking & Payment
+          </Link>
         </nav>
       </div>
       
