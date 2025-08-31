@@ -67,15 +67,27 @@ const CheckoutForm = ({ bookingId, amount, onPaymentSuccess, onPaymentError }) =
         onPaymentError(paymentError);
       } else {
         // Payment succeeded, confirm it on the server
-        const bookingResponse = await api.post(
-          '/bookings/confirm',
-          { 
-            bookingId: bookingId,
-            paymentIntentId: paymentIntent.id 
+        try {
+          const bookingResponse = await api.post(
+            '/bookings/confirm',
+            { 
+              bookingId: bookingId,
+              paymentIntentId: paymentIntent.id 
+            }
+          );
+          
+          if (bookingResponse.data && bookingResponse.data.success) {
+            onPaymentSuccess(bookingResponse.data.booking);
+          } else {
+            // Handle case where server confirmation fails
+            setError('Payment succeeded but booking confirmation failed. Please contact support.');
+            onPaymentError(new Error('Booking confirmation failed'));
           }
-        );
-        
-        onPaymentSuccess(bookingResponse.data.booking);
+        } catch (confirmError) {
+          console.error('Error confirming booking:', confirmError);
+          setError('Payment succeeded but booking confirmation failed. Please contact support.');
+          onPaymentError(confirmError);
+        }
       }
     } catch (err) {
       console.error('Error processing payment:', err);
