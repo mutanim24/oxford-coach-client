@@ -60,8 +60,7 @@ const BookingSummary = () => {
       const bookingPayload = {
         scheduleId: bookingData.scheduleId,
         selectedSeats: bookingData.selectedSeats,
-        totalAmount: bookingData.selectedSeats.length * bookingData.fare,
-        userId: user._id
+        totalFare: bookingData.selectedSeats.length * bookingData.fare
       };
 
       // Make API call to create the booking using the booking service
@@ -118,7 +117,14 @@ const BookingSummary = () => {
 
   const handlePaymentError = (error) => {
     console.error('Payment error:', error);
-    setError('Payment failed. Please try again.');
+    // Check if error is an object with message
+    if (error && typeof error === 'object' && error.message) {
+      setError(error.message);
+    } else if (error && typeof error === 'string') {
+      setError(error);
+    } else {
+      setError('Payment failed. Please try again.');
+    }
   };
 
   if (isLoading) {
