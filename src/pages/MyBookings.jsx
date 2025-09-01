@@ -17,10 +17,20 @@ const MyBookings = () => {
       try {
         setLoading(true);
         const response = await bookingService.getUserBookings();
-        setBookings(response.bookings);
+        console.log('MyBookings response:', response);
+
+        // Handle different response structures
+        if (response && response.bookings) {
+          setBookings(response.bookings);
+        } else if (response && Array.isArray(response)) {
+          setBookings(response);
+        } else {
+          console.warn('Unexpected response structure:', response);
+          setBookings([]);
+        }
       } catch (err) {
-        setError('Failed to fetch bookings. Please try again later.');
         console.error('Error fetching bookings:', err);
+        setError('Failed to fetch bookings. Please try again later.');
       } finally {
         setLoading(false);
       }
@@ -33,19 +43,51 @@ const MyBookings = () => {
     navigate(`/booking/${bookingId}`);
   };
 
+  const handleCancelBooking = async (bookingId) => {
+    if (window.confirm('Are you sure you want to cancel this booking? This action cannot be undone.')) {
+      try {
+        setLoading(true);
+        await bookingService.cancelBooking(bookingId);
+        setToast({ show: true, message: 'Booking cancelled successfully', type: 'success' });
+        // Refresh the bookings list
+        const response = await bookingService.getUserBookings();
+
+        // Handle different response structures
+        if (response && response.bookings) {
+          setBookings(response.bookings);
+        } else if (response && Array.isArray(response)) {
+          setBookings(response);
+        } else {
+          console.warn('Unexpected response structure after cancellation:', response);
+          setBookings([]);
+        }
+      } catch (error) {
+        setToast({ show: true, message: 'Failed to cancel booking. Please try again.', type: 'error' });
+        console.error('Error cancelling booking:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
   const formatDate = (dateString) => {
-    const options = { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric', 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    const options = {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
     };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
   const isUpcoming = (departureTime) => {
     return new Date(departureTime) > new Date();
+  };
+
+  const canCancel = (booking) => {
+    // Allow cancellation only for confirmed bookings that haven't departed yet
+    return booking.status === 'confirmed' && isUpcoming(booking.schedule.departureTime);
   };
 
   if (loading) {
@@ -93,7 +135,7 @@ const MyBookings = () => {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">My Bookings</h1>
           <p className="mt-2 text-gray-600">
-            {bookings.length > 0 
+            {bookings.length > 0
               ? `You have ${bookings.length} booking${bookings.length !== 1 ? 's' : ''}.`
               : 'You have no bookings yet.'}
           </p>
@@ -107,8 +149,8 @@ const MyBookings = () => {
             <h3 className="mt-4 text-lg font-medium text-gray-900">No bookings found</h3>
             <p className="mt-2 text-gray-500">You haven't made any bookings yet.</p>
             <div className="mt-6">
-              <Button 
-                onClick={() => navigate('/')} 
+              <Button
+                onClick={() => navigate('/')}
                 className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 Search for Buses
@@ -121,14 +163,18 @@ const MyBookings = () => {
               {bookings.map((booking) => (
                 <li key={booking._id}>
                   <div className="px-4 py-4 sm:px-6">
+                    <div className="border-l-4 border-blue-500 pl-4 py-2">
+                      <div className="text-lg font-bold text-gray-900 mb-1">{booking.bus.name}</div>
+                      <div className="text-sm text-gray-600 mb-2">{booking.bus.busType} • {booking.bus.operator}</div>
+                    </div>
+
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
                         <div className="flex-shrink-0">
-                          <div className={`h-10 w-10 rounded-full flex items-center justify-center ${
-                            isUpcoming(booking.schedule.departureTime) 
-                              ? 'bg-green-100' 
+                          <div className={`h-10 w-10 rounded-full flex items-center justify-center ${isUpcoming(booking.schedule.departureTime)
+                              ? 'bg-green-100'
                               : 'bg-gray-100'
-                          }`}>
+                            }`}>
                             <svg className="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
@@ -145,30 +191,52 @@ const MyBookings = () => {
                         </div>
                       </div>
                       <div className="ml-4 flex-shrink-0 flex">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          booking.status === 'confirmed' 
-                            ? 'bg-green-100 text-green-800' 
+                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${booking.status === 'confirmed'
+                            ? 'bg-green-100 text-green-800'
                             : booking.status === 'pending'
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-red-100 text-red-800'
-                        }`}>
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : 'bg-red-100 text-red-800'
+                          }`}>
                           {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
                         </span>
                       </div>
                     </div>
-                    <div className="mt-2 flex items-center justify-between text-sm text-gray-500">
-                      <div>
-                        <span className="font-medium">{booking.bus.name}</span> • {booking.selectedSeats.length} seat{booking.selectedSeats.length !== 1 ? 's' : ''}
+                    <div className="mt-2 flex flex-wrap items-center justify-between text-sm text-gray-500 gap-2">
+                      <div className="flex items-center space-x-4">
+                        <div>
+                          {booking.selectedSeats.length} seat{booking.selectedSeats.length !== 1 ? 's' : ''}: {booking.selectedSeats.join(', ')}
+                        </div>
+                        <div className="font-medium">${booking.totalFare}</div>
                       </div>
-                      <div className="font-medium">${booking.totalFare}</div>
+                      <div className="flex items-center space-x-2">
+                        {booking.paymentStatus && (
+                          <span className={`px-2 py-1 text-xs font-medium rounded-full ${booking.paymentStatus === 'succeeded'
+                              ? 'bg-green-100 text-green-800'
+                              : booking.paymentStatus === 'pending'
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : 'bg-red-100 text-red-800'
+                            }`}>
+                            {booking.paymentStatus.charAt(0).toUpperCase() + booking.paymentStatus.slice(1)}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <div className="mt-4">
-                      <Button
-                        onClick={() => handleViewDetails(booking._id)}
-                        className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      
+                      <button
+                         onClick={() => handleViewDetails(booking._id)}
+                        className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
                       >
-                        View Details
-                      </Button>
+                        Details
+                      </button>
+                      {canCancel(booking) && (
+                        <Button
+                          onClick={() => handleCancelBooking(booking._id)}
+                          className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                        >
+                          Cancel
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </li>
@@ -180,9 +248,9 @@ const MyBookings = () => {
 
       {toast.show && (
         <div className="fixed bottom-4 right-4 z-50">
-          <Toast 
-            message={toast.message} 
-            type={toast.type} 
+          <Toast
+            message={toast.message}
+            type={toast.type}
             onClose={() => setToast({ show: false, message: '', type: '' })}
           />
         </div>

@@ -15,9 +15,14 @@ const createBooking = async (bookingData) => {
 const getUserBookings = async () => {
   try {
     const response = await api.get('/bookings/my-bookings');
+    console.log('Bookings response:', response.data);
     return response.data;
   } catch (error) {
     console.error('Error fetching user bookings:', error);
+    if (error.response) {
+      console.error('Error response data:', error.response.data);
+      console.error('Error response status:', error.response.status);
+    }
     throw error;
   }
 };
@@ -44,9 +49,33 @@ const getAllBookingsV2 = async () => {
   }
 };
 
+// Cancel a booking
+const cancelBooking = async (bookingId) => {
+  try {
+    const response = await api.put(`/bookings/${bookingId}/cancel`);
+    return response.data;
+  } catch (error) {
+    console.error('Error cancelling booking:', error);
+    throw error;
+  }
+};
+
+// Get a single booking by ID
+const getBookingById = async (bookingId) => {
+  try {
+    const response = await api.get(`/bookings/${bookingId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching booking by ID:', error);
+    throw error;
+  }
+};
+
 export default {
   createBooking,
   getUserBookings,
   getAllBookings,
-  getAllBookingsV2
+  getAllBookingsV2,
+  cancelBooking,
+  getBookingById
 };
