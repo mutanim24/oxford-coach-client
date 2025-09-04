@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import bookingService from '../services/bookingService';
 import Navbar from '../components/Navbar/Navbar';
 import Button from '../components/Button/Button';
 import Toast from '../components/Toast/Toast';
+import Ticket from '../components/Ticket/Ticket';
+import domtoimage from 'dom-to-image';
+import { jsPDF } from 'jspdf';
 
 const BookingDetails = () => {
   const { bookingId } = useParams();
@@ -69,62 +72,50 @@ const BookingDetails = () => {
     return booking.status === 'confirmed' && isUpcoming(booking.schedule.departureTime);
   };
 
-  const handleDownloadTicket = () => {
-    // Create a simple ticket content
-    const ticketContent = `
-OXFORD COACH SERVICES
----------------------
-PNR: ${booking.pnrNumber}
-Booking ID: ${booking._id}
+  const ticketRef = useRef(null);
 
-PASSENGER INFORMATION
----------------------
-Name: ${booking.user.name}
-Email: ${booking.user.email}
-
-TRIP INFORMATION
----------------------
-Route: ${booking.schedule.source} to ${booking.schedule.destination}
-Departure: ${formatDate(booking.schedule.departureTime)}
-Bus Operator: ${booking.bus.operator}
-Bus Type: ${booking.bus.busType}
-
-SEAT INFORMATION
----------------------
-Selected Seats: ${booking.selectedSeats.join(', ')}
-Number of Seats: ${booking.selectedSeats.length}
-
-PAYMENT INFORMATION
----------------------
-Total Fare: $${booking.totalFare}
-Status: ${booking.status}
-${booking.paymentStatus ? `Payment Status: ${booking.paymentStatus}` : ''}
-${booking.paymentDate ? `Payment Date: ${formatDate(booking.paymentDate)}` : ''}
-
-Thank you for choosing Oxford Coach Services!
-    `;
-
-    // Create a blob with the ticket content
-    const blob = new Blob([ticketContent], { type: 'text/plain' });
+  // Function to download ticket as PDF
+  const downloadPDF = async () => {
+    if (!ticketRef.current) return;
     
-    // Create a URL for the blob
-    const url = window.URL.createObjectURL(blob);
-    
-    // Create a temporary anchor element to trigger the download
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `ticket-${booking.pnrNumber}.txt`;
-    
-    // Append the anchor to the body, trigger the click, and remove it
-    document.body.appendChild(a);
-    a.click();
-    
-    // Clean up
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(a);
-    
-    // Show success toast
-    setToast({ show: true, message: 'Ticket downloaded successfully', type: 'success' });
+    try {
+      // Convert the ticket div to a PNG image using dom-to-image
+      const dataUrl = await domtoimage.toPng(ticketRef.current, { 
+        quality: 0.95,
+        backgroundColor: '#ffffff'
+      });
+      
+      // Create a new PDF document
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      
+      // Create an image to get dimensions
+      const img = new Image();
+      img.src = dataUrl;
+      
+      img.onload = () => {
+        // Calculate dimensions to fit the PDF page
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (img.height * pdfWidth) / img.width;
+        
+        // Add the image to the PDF
+        pdf.addImage(dataUrl, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        
+        // Save the PDF
+        pdf.save(`ticket-${booking.pnrNumber}.pdf`);
+        
+        // Show success toast
+        setToast({ show: true, message: 'Ticket downloaded successfully', type: 'success' });
+      };
+      
+      img.onerror = (error) => {
+        console.error('Error loading image:', error);
+        setToast({ show: true, message: 'Failed to generate PDF. Please try again.', type: 'error' });
+      };
+      
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      setToast({ show: true, message: 'Failed to download PDF. Please try again.', type: 'error' });
+    }
   };
 
   if (loading) {
@@ -318,12 +309,22 @@ Thank you for choosing Oxford Coach Services!
               )}
              
               <button
-                onClick={handleDownloadTicket} 
-                className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
+                onClick={downloadPDF} 
+                className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
               >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                </svg>
                 Download Ticket
               </button>
             </div>
+          </div>
+        </div>
+
+        {/* Hidden ticket component for PDF generation */}
+        <div className="hidden">
+          <div ref={ticketRef}>
+            <Ticket booking={booking} />
           </div>
         </div>
       </div>
