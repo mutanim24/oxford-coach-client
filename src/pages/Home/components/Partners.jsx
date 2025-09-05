@@ -65,14 +65,14 @@ const Partners = () => {
     <section className="py-20 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-gray-800">
-            Proudly Partnered with Industry Leaders
+          <h2 className="text-3xl md:text-4xl font-extrabold text-green-600">
+            Proudly Partnered with <span className="text-gray-800">Industry Leaders</span>
           </h2>
           <p className="text-lg text-gray-500 mt-2">
             Your ticket to a network of trusted bus companies.
           </p>
         </div>
-        
+
         <motion.div
           className="max-w-6xl mx-auto bg-white rounded-2xl shadow-xl p-8"
           initial={{ opacity: 0, y: 50 }}

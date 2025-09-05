@@ -69,7 +69,6 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: 'easeOut', delay: 1.2 }}
           >
-            {/* The SearchForm component now includes its own background */}
             <SearchForm />
           </motion.div>
         </div>

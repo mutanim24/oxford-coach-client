@@ -45,7 +45,7 @@ const FeatureRow = ({ icon, title, description, image, reverse }) => {
       >
         <img src={image} alt={title} className="w-full h-full object-cover" />
       </motion.div>
-      
+
       {/* Text Column */}
       <motion.div className="flex flex-col justify-center" variants={textVariants}>
         {/* === UPDATED ICON CONTAINER === */}
@@ -64,14 +64,14 @@ const PlatformFeatures = () => {
     <section className="py-20 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center mb-20">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-gray-800">
-            Your Ultimate Travel Companion
+          <h2 className="text-3xl md:text-4xl font-extrabold text-green-600">
+            Your Ultimate <span className="text-gray-800">Travel Companion</span>
           </h2>
           <p className="text-lg text-gray-500 mt-2">
             Simplifying bus travel, from booking to boarding.
           </p>
         </div>
-        
+
         <div className="space-y-20">
           {featuresData.map((feature, index) => (
             <motion.div

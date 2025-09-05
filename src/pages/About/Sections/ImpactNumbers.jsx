@@ -54,21 +54,21 @@ const AnimatedNumber = ({ to }) => {
 
 // 3. The reusable StatItem component
 const StatItem = ({ icon, number, suffix, label }) => {
-    const itemVariants = {
-        hidden: { opacity: 0, y: 30 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } },
-    };
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } },
+  };
 
-    return (
-        <motion.div className="text-center" variants={itemVariants}>
-            <div className="flex justify-center mb-4">{icon}</div>
-            <p className="text-4xl md:text-5xl font-extrabold text-white">
-                <AnimatedNumber to={number} />
-                {suffix}
-            </p>
-            <p className="text-lg text-gray-300 mt-2">{label}</p>
-        </motion.div>
-    );
+  return (
+    <motion.div className="text-center" variants={itemVariants}>
+      <div className="flex justify-center mb-4">{icon}</div>
+      <p className="text-4xl md:text-5xl font-extrabold text-white">
+        <AnimatedNumber to={number} />
+        {suffix}
+      </p>
+      <p className="text-lg text-gray-300 mt-2">{label}</p>
+    </motion.div>
+  );
 };
 
 
@@ -88,7 +88,7 @@ const ImpactNumbers = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-extrabold text-white">
-            Our Impact By The Numbers
+            Our Impact By <span className="text-green-600">The Numbers</span>
           </h2>
           <p className="text-lg text-gray-400 mt-2">
             We're proud of the community we've built and the journeys we've enabled.

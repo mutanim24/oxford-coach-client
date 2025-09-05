@@ -30,15 +30,15 @@ const StepCard = ({ icon, title, description, stepNumber }) => {
 
   return (
     <motion.div
-      className="relative text-center p-6 bg-white rounded-lg shadow-lg"
+      className="relative text-center p-6 bg-gray-800 rounded-lg shadow-lg"
       variants={cardVariants}
     >
-      <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-white border-4 border-green-500 rounded-full h-12 w-12 flex items-center justify-center font-extrabold text-green-500 text-xl">
+      <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-white border-4 border-green-500 rounded-full h-16 w-16 flex items-center justify-center font-extrabold text-green-500 text-xl">
         {stepNumber}
       </div>
       <div className="mt-8 mb-4">{icon}</div>
-      <h3 className="text-xl font-bold mb-2 text-gray-800">{title}</h3>
-      <p className="text-gray-600">{description}</p>
+      <h3 className="text-xl font-bold mb-2 text-white">{title}</h3>
+      <p className="text-white">{description}</p>
     </motion.div>
   );
 };
@@ -58,7 +58,9 @@ const HowItWorks = () => {
     <section className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-gray-800">How It Works</h2>
+          <h2 className="text-3xl md:text-4xl font-extrabold text-gray-800">
+            How It <span className="text-green-600">Works</span>
+          </h2>
           <p className="text-lg text-gray-500 mt-2">Booking your bus ticket is as easy as 1-2-3.</p>
         </div>
         
