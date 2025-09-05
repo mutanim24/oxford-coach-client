@@ -20,6 +20,7 @@ import SearchResults from './pages/SearchResults';
 import BusDetails from './pages/BusDetails';
 import BookingSummary from './pages/BookingSummary';
 import BookingConfirmation from './pages/BookingConfirmation';
+import BookingDetails from './pages/BookingDetails';
 import AdminRoute from './components/AdminRoute';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -55,6 +56,11 @@ function App() {
                 <Route path="/booking-confirmation" element={
                   <ProtectedRoute>
                     <BookingConfirmation />
+                  </ProtectedRoute>
+                } />
+                <Route path="/booking/:bookingId" element={
+                  <ProtectedRoute>
+                    <BookingDetails />
                   </ProtectedRoute>
                 } />
                 <Route path="/my-bookings" element={
