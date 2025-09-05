@@ -24,6 +24,7 @@ import BookingDetails from './pages/BookingDetails';
 import AdminRoute from './components/AdminRoute';
 import ProtectedRoute from './components/ProtectedRoute';
 import AboutUs from './pages/About/AboutUs';
+import ContactUs from './pages/ContactUs/ContactUs';
 
 // Initialize Stripe
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY); // Replace with your actual publishable key
@@ -71,6 +72,9 @@ function App() {
                 } />
                 <Route path="/about-us" element={
                   <AboutUs />
+                } />
+                <Route path="/contact-us" element={
+                  <ContactUs />
                 } />
 
                 {/* Admin Routes */}

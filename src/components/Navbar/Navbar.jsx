@@ -9,6 +9,7 @@ const navLinks = [
   { label: 'Home', path: '/' },
   { label: 'My Bookings', path: (user) => (user ? '/my-bookings' : '/login') },
   { label: 'About Us', path: '/about-us' },
+  { label: 'Contact Us', path: '/contact-us' },
 ];
 
 const Navbar = () => {
