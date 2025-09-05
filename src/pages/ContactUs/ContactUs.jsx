@@ -2,7 +2,6 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { FiMail, FiPhone, FiMapPin, FiChevronDown } from 'react-icons/fi';
 import { Disclosure } from '@headlessui/react';
-import Footer from '../../components/Footer/Footer';
 
 const faqs = [
   {
@@ -159,7 +158,6 @@ const ContactUs = () => {
         </motion.div>
 
       </div>
-        <Footer />
     </div>
   );
 };

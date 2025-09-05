@@ -87,9 +87,6 @@ const Home = () => {
 
       {/* Partners Section */}
       <Partners />
-
-      {/* Footer Section */}
-      <Footer />
     </div>
   );
 };

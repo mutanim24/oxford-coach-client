@@ -22,7 +22,6 @@ const AboutUs = () => {
             <MeetTheTeam />
             <Testimonials />
             <Partners />
-            <Footer />
         </div>
     );
 };
