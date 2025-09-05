@@ -34,7 +34,7 @@ const testimonialsData = [
     trip: 'Edinburgh to Glasgow',
     avatarUrl: 'https://images.pexels.com/photos/1036623/pexels-photo-1036623.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
   },
-    {
+  {
     quote: "The mobile app is a game-changer! I booked my ticket on the go and had my e-ticket ready in seconds. The whole experience, from searching to boarding, was flawless.",
     name: 'David K.',
     trip: 'Birmingham to Bristol',
@@ -47,26 +47,26 @@ const Testimonials = () => {
   return (
     <section className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">
-        <motion.div 
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.5 }}
-            transition={{ duration: 0.6 }}
+        <motion.div
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.5 }}
+          transition={{ duration: 0.6 }}
         >
           <h2 className="text-3xl md:text-4xl font-extrabold text-gray-800">
-            Hear From Our Happy Travelers
+            Hear From Our <span className="text-green-600">Happy Travelers</span>
           </h2>
           <p className="text-lg text-gray-500 mt-2">
             Real stories from passengers who love our service.
           </p>
         </motion.div>
-        
+
         <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.7 }}
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.7 }}
         >
           <Swiper
             effect={'coverflow'}
@@ -82,17 +82,17 @@ const Testimonials = () => {
               slideShadows: false,
             }}
             autoplay={{
-                delay: 5000,
-                disableOnInteraction: false,
+              delay: 5000,
+              disableOnInteraction: false,
             }}
             pagination={{ clickable: true }}
             navigation={true}
             modules={[EffectCoverflow, Pagination, Navigation, Autoplay]}
             className="w-full"
             breakpoints={{
-                640: { slidesPerView: 1, spaceBetween: 20 },
-                768: { slidesPerView: 2, spaceBetween: 30 },
-                1024: { slidesPerView: 3, spaceBetween: 40 },
+              640: { slidesPerView: 1, spaceBetween: 20 },
+              768: { slidesPerView: 2, spaceBetween: 30 },
+              1024: { slidesPerView: 3, spaceBetween: 40 },
             }}
           >
             {testimonialsData.map((testimonial, index) => (
