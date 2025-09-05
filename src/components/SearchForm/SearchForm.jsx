@@ -70,7 +70,7 @@ const SearchForm = () => {
             <div className="lg:mt-8">
               <button
                 type="button" onClick={handleSwap}
-                className="bg-gray-200 hover:bg-gray-300 text-gray-600 p-3 rounded-full transition-colors duration-300 transform lg:rotate-0 rotate-90"
+                className="bg-gray-200 hover:bg-gray-300 text-green-600 p-3 rounded-full transition-colors duration-300 transform lg:rotate-0 rotate-90"
                 aria-label="Swap from and to destinations"
               >
                 <HiArrowsUpDown className="h-5 w-5" />
