@@ -70,25 +70,25 @@ const ContactUs = () => {
           viewport={{ once: true }}
         >
           {/* --- Contact Form --- */}
-          <motion.div className="lg:col-span-2 bg-white/60 backdrop-blur-sm border border-gray-200/50 p-8 rounded-2xl shadow-lg" variants={itemVariants}>
-            <h2 className="text-3xl font-bold text-gray-800 mb-6">Send us a Message</h2>
+          <motion.div className="lg:col-span-2 bg-gray-800 backdrop-blur-sm border border-gray-200/50 p-8 rounded-2xl shadow-lg" variants={itemVariants}>
+            <h2 className="text-3xl font-bold text-white hover:text-green-500 focus:outline-none mb-6">Send us a Message</h2>
             <form className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700">Full Name</label>
+                  <label htmlFor="name" className="block text-sm font-medium text-white">Full Name</label>
                   <input type="text" id="name" className="mt-1 block w-full px-4 py-3 bg-gray-50 border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500" placeholder="John Doe" />
                 </div>
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email Address</label>
+                  <label htmlFor="email" className="block text-sm font-medium text-white">Email Address</label>
                   <input type="email" id="email" className="mt-1 block w-full px-4 py-3 bg-gray-50 border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500" placeholder="you@example.com" />
                 </div>
               </div>
               <div>
-                <label htmlFor="subject" className="block text-sm font-medium text-gray-700">Subject</label>
+                <label htmlFor="subject" className="block text-sm font-medium text-white">Subject</label>
                 <input type="text" id="subject" className="mt-1 block w-full px-4 py-3 bg-gray-50 border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500" placeholder="e.g., Booking Inquiry" />
               </div>
               <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-700">Message</label>
+                <label htmlFor="message" className="block text-sm font-medium text-white">Message</label>
                 <textarea id="message" rows="5" className="mt-1 block w-full px-4 py-3 bg-gray-50 border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500" placeholder="Your message here..."></textarea>
               </div>
               <div>
@@ -101,26 +101,26 @@ const ContactUs = () => {
 
           {/* --- Contact Info Side Panel --- */}
           <motion.div className="space-y-8" variants={itemVariants}>
-            <div className="bg-white/60 backdrop-blur-sm border border-gray-200/50 p-8 rounded-2xl shadow-lg">
-              <h3 className="text-2xl font-bold text-gray-800 mb-4">Contact Information</h3>
+            <div className="bg-gray-800 backdrop-blur-sm border border-gray-200/50 p-8 rounded-2xl shadow-lg">
+              <h3 className="text-2xl font-bold text-white hover:text-green-500 focus:outline-none mb-4">Contact Information</h3>
               <ul className="space-y-4 text-gray-600">
                 <li className="flex items-center space-x-3">
                   <FiMail className="text-green-600 w-5 h-5" />
-                  <span>support@busgo.com</span>
+                  <span className='text-white'>support@busgo.com</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <FiPhone className="text-green-600 w-5 h-5" />
-                  <span>+1 (555) 123-4567</span>
+                  <span className='text-white'>+1 (555) 123-4567</span>
                 </li>
                 <li className="flex items-start space-x-3">
                   <FiMapPin className="text-green-600 w-5 h-5 mt-1 flex-shrink-0" />
-                  <span>123 Travel Lane, Journey City, Route 66, USA</span>
+                  <span className='text-white'>123 Travel Lane, Journey City, Route 66, USA</span>
                 </li>
               </ul>
             </div>
-            <div className="bg-white/60 backdrop-blur-sm border border-gray-200/50 p-8 rounded-2xl shadow-lg">
-              <h3 className="text-2xl font-bold text-gray-800 mb-4">Office Hours</h3>
-              <ul className="space-y-2 text-gray-600">
+            <div className="bg-gray-800 backdrop-blur-sm border border-gray-200/50 p-8 rounded-2xl shadow-lg">
+              <h3 className="text-2xl font-bold text-white hover:text-green-500 focus:outline-none mb-4">Office Hours</h3>
+              <ul className="space-y-2 text-white">
                 <li>Monday - Friday: 9am - 8pm</li>
                 <li>Saturday: 10am - 6pm</li>
                 <li>Sunday: Closed</li>
@@ -140,14 +140,14 @@ const ContactUs = () => {
           <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-8">Frequently Asked Questions</h2>
           <div className="space-y-4">
             {faqs.map((faq, index) => (
-              <Disclosure key={index} as="div" className="bg-white/60 backdrop-blur-sm border border-gray-200/50 p-4 rounded-2xl shadow-lg">
+              <Disclosure key={index} as="div" className="bg-gray-800 backdrop-blur-sm border border-gray-200/50 p-4 rounded-2xl shadow-lg">
                 {({ open }) => (
                   <>
-                    <Disclosure.Button className="w-full flex justify-between items-center text-left text-lg font-medium text-gray-800">
+                    <Disclosure.Button className="w-full flex justify-between items-center text-left text-lg font-medium text-white hover:text-green-500 focus:outline-none">
                       <span>{faq.question}</span>
                       <FiChevronDown className={`transform transition-transform duration-300 ${open ? 'rotate-180' : ''}`} />
                     </Disclosure.Button>
-                    <Disclosure.Panel as="div" className="pt-4 mt-2 border-t border-gray-200 text-gray-600">
+                    <Disclosure.Panel as="div" className="pt-4 mt-2 border-t border-gray-200 text-white">
                       {faq.answer}
                     </Disclosure.Panel>
                   </>
