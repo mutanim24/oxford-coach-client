@@ -33,6 +33,7 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-6">
             <Link to="/" className="text-gray-800 hover:text-green-600 font-medium transition-colors">Home</Link>
             <Link to={user ? "/my-bookings" : "/login"} className="text-gray-800 hover:text-green-600 font-medium transition-colors">My Bookings</Link>
+            <Link to={"/about-us"} className="text-gray-800 hover:text-green-600 font-medium transition-colors">About US</Link>
           </div>
           
           {/* Desktop Auth Buttons */}
@@ -95,6 +96,7 @@ const Navbar = () => {
               <ul className="space-y-6">
                 <li><Link to="/" onClick={closeMobileMenu} className="text-lg text-gray-800 hover:text-green-600 transition-colors">Home</Link></li>
                 <li><Link to={user ? "/my-bookings" : "/login"} onClick={closeMobileMenu} className="text-lg text-gray-800 hover:text-green-600 transition-colors">My Bookings</Link></li>
+                <li><Link to={"/about-us"} onClick={closeMobileMenu} className="text-lg text-gray-800 hover:text-green-600 transition-colors">About Us</Link></li>
                 
                 <li className="pt-6 border-t border-gray-200">
                   {user ? (
