@@ -40,7 +40,7 @@ const Navbar = () => {
     if (user) {
       return (
         <div className={isMobile ? "space-y-4 text-left" : "flex items-center space-x-4"}>
-          <p className="text-gray-700">Welcome, {user.name}</p>
+          <p className="text-white">Welcome, {user.name}</p>
           <button
             onClick={() => {
               logout();
@@ -84,7 +84,7 @@ const Navbar = () => {
             to={path}
             className={({ isActive }) =>
               `font-medium transition-colors duration-300 ${
-                isActive ? 'text-green-600' : 'text-gray-800 hover:text-green-600'
+                isActive ? 'text-green-600' : 'text-white hover:text-green-600'
               }`
             }
           >
@@ -96,7 +96,7 @@ const Navbar = () => {
   );
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-md">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-gray-800 shadow-md">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           <Link to="/" className="text-2xl font-bold text-green-600">
@@ -113,7 +113,7 @@ const Navbar = () => {
           <div className="md:hidden">
             <button
               onClick={() => setIsMobileMenuOpen(true)}
-              className="text-gray-800"
+              className="text-white"
             >
               <FiMenu size={26} />
             </button>
@@ -133,7 +133,7 @@ const Navbar = () => {
               onClick={closeMobileMenu}
             />
             <motion.div
-              className="fixed top-0 right-0 h-full w-4/5 max-w-xs bg-white shadow-2xl z-50 p-6 flex flex-col"
+              className="fixed top-0 right-0 h-full w-4/5 max-w-xs bg-gray-800 shadow-2xl z-50 p-6 flex flex-col"
               variants={menuVariants}
               initial="hidden"
               animate="visible"
@@ -142,7 +142,7 @@ const Navbar = () => {
               <div className="flex justify-between items-center mb-12">
                 <span className="text-2xl font-bold text-green-600">Menu</span>
                 <button onClick={closeMobileMenu}>
-                  <FiX size={26} className="text-gray-800" />
+                  <FiX size={26} className="text-white" />
                 </button>
               </div>
 
@@ -165,7 +165,7 @@ const Navbar = () => {
                           `text-xl block transition-colors ${
                             isActive
                               ? 'text-green-600 font-bold'
-                              : 'text-gray-800 hover:text-green-600'
+                              : 'text-white hover:text-green-600'
                           }`
                         }
                       >
