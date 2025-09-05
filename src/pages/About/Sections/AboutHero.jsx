@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 // A beautiful, aspirational image for the hero section
-const heroImageUrl = "https://images.pexels.com/photos/1563256/pexels-photo-1563256.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2";
+const heroImageUrl = "https://www.shutterstock.com/image-vector/bus-ticket-online-pay-smart-260nw-2598472987.jpg";
 
 const AboutHero = () => {
   return (

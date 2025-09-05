@@ -6,6 +6,7 @@ import Testimonials from '../Home/components/Testimonials';
 import Partners from '../Home/components/Partners';
 import OurJourney from './Sections/OurJourney';
 import OurValues from './Sections/OurValues';
+import MeetTheTeam from './Sections/MeetTheTeam';
 
 const AboutUs = () => {
     return (
@@ -16,6 +17,7 @@ const AboutUs = () => {
             <OurJourney />
             <WhyChooseUs />
             <OurValues />
+            <MeetTheTeam />
             <Testimonials />
             <Partners />
             {/* etc. */}
