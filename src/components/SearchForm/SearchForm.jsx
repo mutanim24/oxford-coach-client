@@ -45,7 +45,7 @@ const SearchForm = () => {
   };
 
   return (
-    <div className="bg-white/20 backdrop-blur-lg p-6 sm:p-8 rounded-xl shadow-2xl w-full max-w-4xl mx-auto">
+    <div className="bg-gray-800/50 backdrop-blur-lg p-6 sm:p-8 rounded-xl shadow-2xl w-full max-w-4xl mx-auto">
       <form onSubmit={handleSubmit}>
         
         {/* Top row for all inputs - uses flexbox for alignment */}
@@ -57,10 +57,10 @@ const SearchForm = () => {
             <div className="w-full lg:flex-1">
               <label className="block text-white text-sm font-medium mb-2">From</label>
               <div className="relative">
-                <FaMapMarkerAlt className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400" />
+                <FaMapMarkerAlt className="absolute top-1/2 left-3 transform -translate-y-1/2 text-white" />
                 <input
                   type="text" name="from" placeholder="Enter source"
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-300 text-black"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-300 text-white"
                   value={formData.from} onChange={handleChange} required
                 />
               </div>
@@ -70,7 +70,7 @@ const SearchForm = () => {
             <div className="lg:mt-8">
               <button
                 type="button" onClick={handleSwap}
-                className="bg-gray-200 hover:bg-gray-300 text-gray-600 p-3 rounded-full transition-colors duration-300 transform lg:rotate-0 rotate-90"
+                className="bg-gray-200 hover:bg-gray-300 text-green-600 p-3 rounded-full transition-colors duration-300 transform lg:rotate-0 rotate-90"
                 aria-label="Swap from and to destinations"
               >
                 <HiArrowsUpDown className="h-5 w-5" />
@@ -81,10 +81,10 @@ const SearchForm = () => {
             <div className="w-full lg:flex-1">
               <label className="block text-white text-sm font-medium mb-2">To</label>
               <div className="relative">
-                <FaMapMarkerAlt className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400" />
+                <FaMapMarkerAlt className="absolute top-1/2 left-3 transform -translate-y-1/2 text-white" />
                 <input
                   type="text" name="to" placeholder="Enter destination"
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-300 text-black"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-300 text-white"
                   value={formData.to} onChange={handleChange} required
                 />
               </div>
@@ -95,10 +95,10 @@ const SearchForm = () => {
           <div className="w-full lg:w-52">
             <label className="block text-white text-sm font-medium mb-2">Date of Journey</label>
             <div className="relative">
-              <FaCalendarAlt className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400" />
+              <FaCalendarAlt className="absolute top-1/2 left-3 transform -translate-y-1/2 text-white" />
               <DatePicker
                 selected={formData.date} onChange={handleDateChange}
-                className="w-full pl-10 pr-4 py-3 border text-black border-gray-300 rounded-lg focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-300"
+                className="w-full pl-10 pr-4 py-3 border text-white border-gray-300 rounded-lg focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-300"
                 minDate={new Date()}
               />
             </div>

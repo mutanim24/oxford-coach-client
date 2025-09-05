@@ -62,8 +62,10 @@ const Services = () => {
     <section className="py-16 bg-gray-50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-800">Why Choose Us?</h2>
-            <p className="text-lg text-gray-500 mt-2">Services designed for your comfort and convenience.</p>
+          <h2 className="text-3xl md:text-4xl font-extrabold text-green-600">
+            Why Choose <span className="text-gray-800">Us?</span>
+          </h2>
+          <p className="text-lg text-gray-500 mt-2">Services designed for your comfort and convenience.</p>
         </div>
         <motion.div
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
