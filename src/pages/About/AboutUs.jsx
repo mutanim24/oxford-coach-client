@@ -8,12 +8,12 @@ import OurJourney from './Sections/OurJourney';
 import OurValues from './Sections/OurValues';
 import MeetTheTeam from './Sections/MeetTheTeam';
 import ImpactNumbers from './Sections/ImpactNumbers';
+import Footer from '../../components/Footer/Footer';
 
 const AboutUs = () => {
     return (
         <div>
             <AboutHero />
-            
             <OurMission /> 
             <ImpactNumbers />
             <OurJourney />
@@ -22,7 +22,7 @@ const AboutUs = () => {
             <MeetTheTeam />
             <Testimonials />
             <Partners />
-            {/* etc. */}
+            <Footer />
         </div>
     );
 };

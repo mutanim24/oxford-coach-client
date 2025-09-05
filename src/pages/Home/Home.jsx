@@ -10,6 +10,7 @@ import Services from './components/Services';
 import PlatformFeatures from './components/PlatformFeatures';
 import Partners from './components/Partners';
 import Testimonials from './components/Testimonials';
+import ImpactNumbers from '../About/Sections/ImpactNumbers';
 
 const Home = () => {
 
@@ -65,11 +66,15 @@ const Home = () => {
       {/* Top Routes Section */}
       <TopRoutes />
 
+      {/* Impact Numbers Section */}
+      <ImpactNumbers />
+
       {/* Services Section */}
       <Services />
 
       {/* Why Choose Us Section */}
       <WhyChooseUs />
+    
 
       {/* How It Works Section */}
       <HowItWorks />
