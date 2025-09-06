@@ -1,6 +1,67 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaFacebook, FaTwitter, FaInstagram, FaYoutube } from 'react-icons/fa';
+import { FiSend } from 'react-icons/fi'; // A nice icon for the send button
+
+// --- Data for Links (Easier to manage) ---
+const quickLinks = [
+  { href: '/about-us', label: 'About Us' },
+  { href: '/contact-us', label: 'Contact Us' },
+  { href: '/faq', label: 'FAQs' },
+  // { href: '/blog', label: 'Blog' }, // Uncomment if you add a blog
+];
+
+const legalLinks = [
+  { href: '/terms-and-conditions', label: 'Terms of Service' },
+  { href: '/privacy-policy', label: 'Privacy Policy' },
+  // +++ THIS IS THE ADJUSTMENT +++
+  // Points to the FAQ page and the specific cancellation section
+  { href: '/faq#cancellation-policy', label: 'Cancellation Policy' },
+];
+
+// --- Reusable Components for Cleaner Code ---
+
+const FooterColumn = ({ title, links }) => (
+  <div>
+    <h3 className="text-lg font-semibold mb-4 text-white uppercase tracking-wider">{title}</h3>
+    <ul className="space-y-3">
+      {links.map((link) => (
+        <li key={link.href}>
+          <Link 
+            to={link.href} 
+            className="text-gray-400 hover:text-white hover:pl-1 transition-all duration-300 block"
+          >
+            {link.label}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  </div>
+);
+
+const NewsletterForm = () => (
+  <div>
+    <h3 className="text-lg font-semibold mb-4 text-white uppercase tracking-wider">Stay Updated</h3>
+    <p className="text-gray-400 mb-4">Get the latest news and offers straight to your inbox.</p>
+    <form>
+      <div className="flex">
+        <input
+          type="email"
+          placeholder="Enter your email"
+          className="w-full px-4 py-3 text-gray-800 bg-white rounded-l-md focus:outline-none focus:ring-2 focus:ring-green-500 transition-shadow"
+          aria-label="Email for newsletter"
+        />
+        <button
+          type="submit"
+          className="bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-r-md font-semibold transition-colors flex items-center"
+          aria-label="Subscribe to newsletter"
+        >
+          <FiSend size={20} />
+        </button>
+      </div>
+    </form>
+  </div>
+);
 
 const Footer = () => {
   return (
@@ -15,61 +76,24 @@ const Footer = () => {
               Your trusted partner for comfortable and affordable bus travel across the nation.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors"><FaFacebook size={24} /></a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors"><FaTwitter size={24} /></a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors"><FaInstagram size={24} /></a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors"><FaYoutube size={24} /></a>
+              <a href="#" className="text-gray-400 hover:text-white transform hover:-translate-y-1 transition-all duration-300"><FaFacebook size={24} /></a>
+              <a href="#" className="text-gray-400 hover:text-white transform hover:-translate-y-1 transition-all duration-300"><FaTwitter size={24} /></a>
+              <a href="#" className="text-gray-400 hover:text-white transform hover:-translate-y-1 transition-all duration-300"><FaInstagram size={24} /></a>
+              <a href="#" className="text-gray-400 hover:text-white transform hover:-translate-y-1 transition-all duration-300"><FaYoutube size={24} /></a>
             </div>
           </div>
           
-          {/* Quick Links */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4 text-white uppercase tracking-wider">Quick Links</h3>
-            <ul className="space-y-3">
-              <li><Link to="/about-us" className="text-gray-400 hover:text-white transition-colors">About Us</Link></li>
-              <li><Link to="/contact-us" className="text-gray-400 hover:text-white transition-colors">Contact Us</Link></li>
-              <li><Link to="/faq" className="text-gray-400 hover:text-white transition-colors">FAQs</Link></li>
-              <li><Link to="/blog" className="text-gray-400 hover:text-white transition-colors">Blog</Link></li>
-            </ul>
-          </div>
-          
-          {/* Legal */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4 text-white uppercase tracking-wider">Legal</h3>
-            <ul className="space-y-3">
-              <li><Link to="/terms-and-conditions" className="text-gray-400 hover:text-white transition-colors">Terms of Service</Link></li>
-              <li><Link to="/privacy-policy" className="text-gray-400 hover:text-white transition-colors">Privacy Policy</Link></li>
-              <li><Link to="/cancellation" className="text-gray-400 hover:text-white transition-colors">Cancellation Policy</Link></li>
-            </ul>
-          </div>
+          <FooterColumn title="Quick Links" links={quickLinks} />
+          <FooterColumn title="Legal" links={legalLinks} />
+          <NewsletterForm />
 
-          {/* Newsletter Signup */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4 text-white uppercase tracking-wider">Stay Updated</h3>
-            <p className="text-gray-400 mb-4">Get the latest news and offers straight to your inbox.</p>
-            <form>
-              <div className="flex">
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="w-full px-4 py-2 text-black bg-white rounded-l-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                />
-                <button
-                  type="submit"
-                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-r-md font-semibold transition-colors"
-                >
-                  Subscribe
-                </button>
-              </div>
-            </form>
-          </div>
         </div>
       </div>
       
       {/* Bottom Copyright Bar */}
       <div className="bg-gray-900 py-4">
-        <div className="container mx-auto text-center text-gray-500">
-          <p>&copy; {new Date().getFullYear()} BusGo. All rights reserved. Built with passion.</p>
+        <div className="container mx-auto text-center text-gray-500 text-sm">
+          <p>&copy; {new Date().getFullYear()} BusGo. All rights reserved. Designed with passion.</p>
         </div>
       </div>
     </footer>

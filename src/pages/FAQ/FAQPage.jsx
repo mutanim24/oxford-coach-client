@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Disclosure } from '@headlessui/react';
 import { FiChevronDown, FiPhone, FiHelpCircle, FiCheckCircle } from 'react-icons/fi';
@@ -34,10 +34,27 @@ const faqSections = [
 ];
 
 const FAQPage = () => {
+    // This hook gets the current URL details, including the hash
+    const location = useLocation();
+
+    // This effect runs when the page loads or the URL changes
+    useEffect(() => {
+        if (location.hash) {
+            // The hash includes the '#', we remove it to get the raw ID
+            const id = location.hash.substring(1);
+            const element = document.getElementById(id);
+            if (element) {
+                // We use a short timeout to ensure the page has rendered before scrolling
+                setTimeout(() => {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100);
+            }
+        }
+    }, [location]); // Re-run the effect if the location changes
+
     return (
-        // === THEME FIX: Main background changed to light gray ===
         <div className="bg-gray-50 min-h-screen">
-            {/* --- Hero Section (remains the same, looks great) --- */}
+            {/* --- Hero Section --- */}
             <div className="relative bg-cover bg-center py-24 md:py-32" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1570125909232-eb263c186922?q=80&w=2070&auto=format&fit=crop')" }}>
                 <div className="absolute inset-0 bg-black/70"></div>
                 <div className="relative container mx-auto px-4 text-center text-white">
@@ -66,40 +83,47 @@ const FAQPage = () => {
                                 key={section.category} className="mb-12"
                                 initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: idx * 0.1 }}
                             >
-                                {/* === THEME FIX: Section title color changed to dark === */}
                                 <h2 className="text-3xl font-bold text-gray-800 mb-6 pb-2 border-b-2 border-green-500 inline-block">{section.category}</h2>
                                 <div className="w-full space-y-4">
-                                    {section.questions.map((item) => (
-                                        // The accordion items remain dark, as requested
-                                        <Disclosure key={item.q} as="div" className="bg-gray-800 rounded-lg shadow-lg">
-                                            {({ open }) => (
-                                                <>
-                                                    <Disclosure.Button className="flex w-full justify-between rounded-lg px-6 py-4 text-left text-lg font-medium text-gray-100 hover:bg-gray-700 focus:outline-none focus-visible:ring focus-visible:ring-green-500 focus-visible:ring-opacity-75 transition-colors">
-                                                        <span>{item.q}</span>
-                                                        <FiChevronDown className={`${open ? 'rotate-180' : ''} h-6 w-6 text-green-400 transform transition-transform duration-300`} />
-                                                    </Disclosure.Button>
-                                                    <AnimatePresence>
-                                                        {open && (
-                                                            <motion.div
-                                                                initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
-                                                                transition={{ duration: 0.3, ease: 'easeInOut' }} className="overflow-hidden"
-                                                            >
-                                                                <Disclosure.Panel className="px-6 pb-4 pt-2 text-base text-gray-300">
-                                                                    {item.a}
-                                                                </Disclosure.Panel>
-                                                            </motion.div>
-                                                        )}
-                                                    </AnimatePresence>
-                                                </>
-                                            )}
-                                        </Disclosure>
-                                    ))}
+                                    {section.questions.map((item) => {
+                                        // Check if this is the target question for our link
+                                        const isCancellationQuestion = item.q === "How do I cancel my ticket?";
+                                        return (
+                                            <Disclosure
+                                                key={item.q} as="div"
+                                                // This ID is the target for our auto-scroll feature
+                                                id={isCancellationQuestion ? 'cancellation-policy' : undefined}
+                                                className="bg-gray-800 rounded-lg shadow-lg scroll-mt-24" // scroll-mt adds top margin when scrolling
+                                            >
+                                                {({ open }) => (
+                                                    <>
+                                                        <Disclosure.Button className="flex w-full justify-between rounded-lg px-6 py-4 text-left text-lg font-medium text-gray-100 hover:bg-gray-700 focus:outline-none focus-visible:ring focus-visible:ring-green-500 focus-visible:ring-opacity-75 transition-colors">
+                                                            <span>{item.q}</span>
+                                                            <FiChevronDown className={`${open ? 'rotate-180' : ''} h-6 w-6 text-green-400 transform transition-transform duration-300`} />
+                                                        </Disclosure.Button>
+                                                        <AnimatePresence>
+                                                            {open && (
+                                                                <motion.div
+                                                                    initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+                                                                    transition={{ duration: 0.3, ease: 'easeInOut' }} className="overflow-hidden"
+                                                                >
+                                                                    <Disclosure.Panel className="px-6 pb-4 pt-2 text-base text-gray-300">
+                                                                        {item.a}
+                                                                    </Disclosure.Panel>
+                                                                </motion.div>
+                                                            )}
+                                                        </AnimatePresence>
+                                                    </>
+                                                )}
+                                            </Disclosure>
+                                        );
+                                    })}
                                 </div>
                             </motion.div>
                         ))}
                     </div>
 
-                    {/* --- Side Panel (remains dark for contrast) --- */}
+                    {/* --- Side Panel --- */}
                     <aside>
                         <div className="sticky top-24 space-y-8">
                             <motion.div
@@ -133,6 +157,7 @@ const FAQPage = () => {
                                 <FiHelpCircle className="h-8 w-8 mb-4 text-green-500" />
                                 <h3 className="text-2xl font-bold text-white mb-2">Still have questions?</h3>
                                 <p className="text-gray-300 mb-4">Our contact team is here to help you directly.</p>
+
                                 <Link to="/contact-us" className="inline-block bg-green-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-green-700 transition-all duration-300">
                                     Contact Us
                                 </Link>
