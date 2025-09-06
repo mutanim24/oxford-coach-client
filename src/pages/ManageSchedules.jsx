@@ -30,7 +30,9 @@ const ManageSchedules = () => {
     fetchAllBuses();
   }, []);
 
+  // Fetch schedules when component mounts or busId changes
   useEffect(() => {
+    // Guard clause: Only fetch if busId is available
     if (!busId) {
       setLoading(false);
       setSchedules([]);
