@@ -6,14 +6,12 @@ const AdminLayout = () => {
   
   // Determine which nav item is active
   const getActiveClass = (path) => {
-    // Special handling for dashboard (exact match only)
     if (path === '/admin') {
       return location.pathname === '/admin' 
         ? 'bg-gray-900 text-white' 
         : 'text-gray-300 hover:bg-gray-700 hover:text-white';
     }
     
-    // For other routes, check if the path starts with the route path
     return location.pathname.startsWith(path + '/') || location.pathname === path
       ? 'bg-gray-900 text-white' 
       : 'text-gray-300 hover:bg-gray-700 hover:text-white';
