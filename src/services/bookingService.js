@@ -11,7 +11,6 @@ const createBooking = async (bookingData) => {
   }
 };
 
-// Get all bookings for the authenticated user
 const getUserBookings = async () => {
   try {
     const response = await api.get('/bookings/my-bookings');
