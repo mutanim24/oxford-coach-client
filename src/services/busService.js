@@ -40,4 +40,4 @@ const busService = {
   deleteBus
 };
 
-export default busService;
+export default busService; 
