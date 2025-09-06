@@ -2,10 +2,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiUsers, FiSearch, FiShield, FiUserX, FiArrowLeft, FiAlertTriangle, FiLoader } from 'react-icons/fi';
-// Your existing Toast component
 import Toast from '../components/Toast/Toast';
 
-// All your original logic for fetching and mutations is preserved.
 const UsersPage = () => {
     const [users, setUsers] = useState([]);
     const [filter, setFilter] = useState('all');
@@ -19,11 +17,13 @@ const UsersPage = () => {
             try {
                 setLoading(true);
                 const token = localStorage.getItem('token');
-                // The API call is the same
                 const response = await fetch(`http://localhost:5000/api/users?role=${filter}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                if (!response.ok) throw new Error('Failed to fetch users');
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to fetch users');
+                }
                 const data = await response.json();
                 setUsers(data);
             } catch (err) {
@@ -35,11 +35,8 @@ const UsersPage = () => {
         fetchUsers();
     }, [filter]);
 
-    const handleFilterChange = (e) => setFilter(e.target.value);
-    const handleSearchChange = (e) => setSearchTerm(e.target.value);
-
     const handleDeleteUser = async (userId) => {
-        if (window.confirm('Are you sure you want to delete this user?')) {
+        if (window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
             try {
                 const token = localStorage.getItem('token');
                 const response = await fetch(`http://localhost:5000/api/users/${userId}`, {
@@ -57,7 +54,7 @@ const UsersPage = () => {
     };
 
     const handleMakeAdmin = async (userId) => {
-         if (window.confirm('Are you sure you want to make this user an admin?')) {
+        if (window.confirm('Are you sure you want to make this user an admin?')) {
             try {
                 const token = localStorage.getItem('token');
                 const response = await fetch(`http://localhost:5000/api/users/${userId}/make-admin`, {
@@ -75,53 +72,64 @@ const UsersPage = () => {
     };
 
     const filteredUsers = useMemo(() => {
+        if (!users) return [];
         return users.filter(user =>
             user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             user.email.toLowerCase().includes(searchTerm.toLowerCase())
         );
     }, [users, searchTerm]);
 
-    // --- New UI Components ---
-    const UserCard = ({ user }) => (
-        <motion.div
-            layout
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-            className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 p-6 flex flex-col"
-        >
-            <div className="flex items-center mb-4">
-                <div className={`w-12 h-12 rounded-full flex-shrink-0 flex items-center justify-center text-white font-bold text-xl ${user.role === 'admin' ? 'bg-red-500' : 'bg-green-500'}`}>
-                    {user.name.charAt(0).toUpperCase()}
+    const formatDate = (dateString) => {
+        if (!dateString) return 'N/A';
+        return new Date(dateString).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    };
+
+    const tableContainerVariants = {
+        hidden: { opacity: 0 },
+        visible: { opacity: 1, transition: { staggerChildren: 0.05 } }
+    };
+
+    const tableRowVariants = {
+        hidden: { opacity: 0, y: 10 },
+        visible: { opacity: 1, y: 0 }
+    };
+
+    const UserTableRow = ({ user }) => (
+        <motion.tr variants={tableRowVariants} className="hover:bg-gray-50 transition-colors">
+            <td className="px-6 py-4 whitespace-nowrap">
+                <div className="flex items-center">
+                    <div className="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-green-500 text-white font-bold">
+                        {user.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="ml-4">
+                        <div className="text-sm font-medium text-gray-900">{user.name}</div>
+                        <div className="text-sm text-gray-500">{user.email}</div>
+                    </div>
                 </div>
-                <div className="ml-4 truncate">
-                    <p className="text-lg font-bold text-gray-800 truncate">{user.name}</p>
-                    <p className="text-sm text-gray-500 truncate">{user.email}</p>
-                </div>
-            </div>
-            <div className="flex-grow"></div>
-            <div className="border-t pt-4 mt-4 flex justify-between items-center">
-                <span className={`px-3 py-1 text-xs font-semibold rounded-full ${user.role === 'admin' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
+            </td>
+            <td className="px-6 py-4 whitespace-nowrap">
+                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.role === 'admin' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
                     {user.role}
                 </span>
-                <div className="flex items-center gap-2">
+            </td>
+            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {formatDate(user.createdAt)}
+            </td>
+            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <div className="flex items-center justify-end gap-2">
                     {user.role !== 'admin' && (
-                        <button onClick={() => handleMakeAdmin(user._id)} title="Make Admin" className="text-gray-400 hover:text-blue-600 p-2 rounded-full transition-colors"><FiShield /></button>
+                        <button onClick={() => handleMakeAdmin(user._id)} title="Make Admin" className="text-gray-400 hover:text-blue-600 p-2 rounded-full transition-colors"><FiShield size={18} /></button>
                     )}
-                    <button onClick={() => handleDeleteUser(user._id)} title="Delete User" className="text-gray-400 hover:text-red-600 p-2 rounded-full transition-colors"><FiUserX /></button>
+                    <button onClick={() => handleDeleteUser(user._id)} title="Delete User" className="text-gray-400 hover:text-red-600 p-2 rounded-full transition-colors"><FiUserX size={18} /></button>
                 </div>
-            </div>
-        </motion.div>
+            </td>
+        </motion.tr>
     );
 
-    const SkeletonCard = () => (
-      <div className="bg-white rounded-lg shadow-md p-6 animate-pulse">
-        <div className="flex items-center mb-4"><div className="w-12 h-12 rounded-full bg-gray-200"></div><div className="ml-4 flex-1"><div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div><div className="h-3 bg-gray-200 rounded w-full"></div></div></div>
-        <div className="border-t pt-4 mt-4 flex justify-between items-center"><div className="h-6 w-16 bg-gray-200 rounded-full"></div><div className="flex gap-2"><div className="w-8 h-8 rounded-full bg-gray-200"></div><div className="w-8 h-8 rounded-full bg-gray-200"></div></div></div>
-      </div>
-    );
-    
     return (
         <div className="container mx-auto px-4 py-8">
             <AnimatePresence>
@@ -130,8 +138,8 @@ const UsersPage = () => {
 
             <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col md:flex-row justify-between md:items-center mb-8 gap-4">
                 <div>
-                  <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">User Management</h1>
-                  <p className="mt-1 text-lg text-gray-500">Browse, manage, and update user roles.</p>
+                    <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">User Management</h1>
+                    <p className="mt-1 text-lg text-gray-500">Browse, manage, and update user roles.</p>
                 </div>
                 <Link to="/admin" className="flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-gray-900 transition-colors">
                     <FiArrowLeft /> Back to Dashboard
@@ -142,9 +150,9 @@ const UsersPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="relative md:col-span-2">
                         <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                        <input type="text" placeholder="Search by name or email..." value={searchTerm} onChange={handleSearchChange} className="w-full border border-gray-300 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" />
+                        <input type="text" placeholder="Search by name or email..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full border border-gray-300 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" />
                     </div>
-                    <select value={filter} onChange={handleFilterChange} className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <select value={filter} onChange={(e) => setFilter(e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
                         <option value="all">All Roles</option>
                         <option value="admin">Admins</option>
                         <option value="user">Users</option>
@@ -153,28 +161,46 @@ const UsersPage = () => {
             </motion.div>
 
             {loading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {[...Array(6)].map((_, i) => <SkeletonCard key={i} />)}
+                <div className="text-center p-12 text-gray-500">
+                    <FiLoader className="h-8 w-8 mx-auto animate-spin mb-4" />
+                    <p>Loading users...</p>
                 </div>
             ) : error ? (
                 <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-6 rounded-md flex items-center gap-4">
                     <FiAlertTriangle className="h-8 w-8" />
-                    <div><h3 className="font-bold">Error</h3><p>{error}</p></div>
+                    <div>
+                        <h3 className="font-bold">Error</h3>
+                        <p>{error}</p>
+                    </div>
                 </div>
             ) : (
-                <AnimatePresence>
-                    {filteredUsers.length === 0 ? (
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center bg-white rounded-xl shadow-lg p-12">
-                            <FiUsers className="mx-auto h-16 w-16 text-gray-300" />
-                            <h3 className="mt-4 text-2xl font-bold text-gray-800">No Users Found</h3>
-                            <p className="mt-2 text-gray-500">No users match your current search and filter criteria.</p>
-                        </motion.div>
-                    ) : (
-                        <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {filteredUsers.map((user) => <UserCard key={user._id} user={user} />)}
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                <motion.div layout className="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-200">
+                            <thead className="bg-gray-50">
+                                <tr>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Joined</th>
+                                    <th scope="col" className="relative px-6 py-3"><span className="sr-only">Actions</span></th>
+                                </tr>
+                            </thead>
+                            <motion.tbody variants={tableContainerVariants} initial="hidden" animate="visible" className="bg-white divide-y divide-gray-200">
+                                {filteredUsers.length === 0 ? (
+                                    <tr>
+                                        <td colSpan="4" className="px-6 py-12 text-center text-gray-500">
+                                            <FiUsers className="mx-auto h-12 w-12 text-gray-300 mb-4" />
+                                            <h3 className="text-lg font-medium">No Users Found</h3>
+                                            <p>No users match your current search and filter criteria.</p>
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    filteredUsers.map((user) => <UserTableRow key={user._id} user={user} />)
+                                )}
+                            </motion.tbody>
+                        </table>
+                    </div>
+                </motion.div>
             )}
         </div>
     );
