@@ -31,6 +31,7 @@ import ContactUs from './pages/ContactUs/ContactUs';
 import MainLayout from './MainLayout/MainLayout';
 import NotFoundPage from './pages/NotFoundPage/NotFoundPage ';
 import FAQPage from './pages/FAQ/FAQPage';
+import TermsAndConditions from './pages/TermsAndCondition/TermsAndConditions';
 
 // Initialize Stripe
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
@@ -80,6 +81,7 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/login" element={<Login />} />
               <Route path="/faq" element={<FAQPage />} />
+              <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
             </Route>
 
             {/* Admin Routes might use a different layout, so they can stay separate */}
