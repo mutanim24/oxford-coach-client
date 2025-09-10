@@ -17,7 +17,7 @@ const UsersPage = () => {
             try {
                 setLoading(true);
                 const token = localStorage.getItem('token');
-                const response = await fetch(`http://localhost:5000/api/users?role=${filter}`, {
+                const response = await fetch(`https://oxford-coach-server.vercel.app/api/users?role=${filter}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (!response.ok) {
@@ -39,7 +39,7 @@ const UsersPage = () => {
         if (window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch(`http://localhost:5000/api/users/${userId}`, {
+                const response = await fetch(`https://oxford-coach-server.vercel.app/api/users/${userId}`, {
                     method: 'DELETE',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -57,7 +57,7 @@ const UsersPage = () => {
         if (window.confirm('Are you sure you want to make this user an admin?')) {
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch(`http://localhost:5000/api/users/${userId}/make-admin`, {
+                const response = await fetch(`https://oxford-coach-server.vercel.app/api/users/${userId}/make-admin`, {
                     method: 'PUT',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });

@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create a new Axios instance
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: 'https://oxford-coach-server.vercel.app/api',
   headers: {
     'Content-Type': 'application/json'
   }

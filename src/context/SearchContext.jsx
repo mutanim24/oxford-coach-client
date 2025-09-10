@@ -28,7 +28,7 @@ export const SearchProvider = ({ children }) => {
         date: formattedDate
       });
       
-      const response = await axios.get('http://localhost:5000/api/search', {
+      const response = await axios.get('https://oxford-coach-server.vercel.app/api/search', {
         params: {
           source: searchData.from,
           destination: searchData.to,
@@ -63,7 +63,7 @@ export const SearchProvider = ({ children }) => {
         destination
       });
       
-      const response = await axios.get('http://localhost:5000/api/search', {
+      const response = await axios.get('https://oxford-coach-server.vercel.app/api/search', {
         params: {
           source,
           destination,
