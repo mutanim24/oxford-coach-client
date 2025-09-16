@@ -41,8 +41,15 @@ export const SearchProvider = ({ children }) => {
       // Ensure we have an array, even if the API returns a single object
       const results = Array.isArray(response.data) ? response.data : [response.data].filter(Boolean);
       
-      setSearchResults(results);
-      return { success: true, data: results };
+      // Filter out past schedules
+      const currentDateTime = new Date();
+      const upcomingResults = results.filter(schedule => {
+        const scheduleDateTime = new Date(schedule.departureTime);
+        return scheduleDateTime > currentDateTime;
+      });
+      
+      setSearchResults(upcomingResults);
+      return { success: true, data: upcomingResults };
     } catch (err) {
       console.error('Search error:', err);
       const errorMessage = err.response?.data?.message || 'Failed to search buses';
@@ -76,8 +83,15 @@ export const SearchProvider = ({ children }) => {
       // Ensure we have an array, even if the API returns a single object
       const results = Array.isArray(response.data) ? response.data : [response.data].filter(Boolean);
       
-      setSearchResults(results);
-      return { success: true, data: results };
+      // Filter out past schedules
+      const currentDateTime = new Date();
+      const upcomingResults = results.filter(schedule => {
+        const scheduleDateTime = new Date(schedule.departureTime);
+        return scheduleDateTime > currentDateTime;
+      });
+      
+      setSearchResults(upcomingResults);
+      return { success: true, data: upcomingResults };
     } catch (err) {
       console.error('Search error without date filter:', err);
       const errorMessage = err.response?.data?.message || 'Failed to search buses';
