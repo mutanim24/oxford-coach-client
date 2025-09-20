@@ -9,6 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import bookingService from '../services/bookingService';
 import busService from '../services/busService';
 import scheduleService from '../services/scheduleService';
+import BookingInsights from './BookingInsights';
 
 const ViewBookings = () => {
     const [bookings, setBookings] = useState([]);
@@ -26,7 +27,7 @@ const ViewBookings = () => {
 
                 // Step 1: Fetch from all three services at once for performance.
                 const [bookingResponse, buses, scheduleResponse] = await Promise.all([
-                    bookingService.getAllBookings(), // Assumes this hits a simple, non-crashing endpoint
+                    bookingService.getAllBookings(),
                     busService.getBuses(),
                     scheduleService.getAllSchedules()
                 ]);
@@ -41,12 +42,10 @@ const ViewBookings = () => {
                 // Step 3: Manually "populate" the bookings on the frontend.
                 const populatedBookings = rawBookings.map(booking => {
                     const schedule = scheduleMap.get(booking.schedule);
-                    // Get the bus details from the schedule's bus ID
                     const bus = schedule ? busMap.get(schedule.bus) : null;
                     
                     return {
                         ...booking,
-                        // Add the full schedule and bus objects, with fallbacks for safety
                         schedule: schedule || { source: 'N/A', destination: 'N/A' },
                         bus: bus || { name: 'Unknown Bus', operator: 'N/A' }
                     };
@@ -65,10 +64,35 @@ const ViewBookings = () => {
         fetchAndCombineData();
     }, []);
 
+    // --- NEW: Calculate insights using useMemo for efficiency ---
+    const bookingInsights = useMemo(() => {
+        if (!bookings || bookings.length === 0) {
+            return { totalRevenue: 0, monthlySales: 0, confirmedBookings: 0, cancelledBookings: 0 };
+        }
+
+        const now = new Date();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+
+        const confirmed = bookings.filter(b => b.status === 'confirmed');
+
+        const totalRevenue = confirmed.reduce((acc, b) => acc + b.totalFare, 0);
+        
+        const monthlySales = bookings.filter(b => {
+            const bookingDate = new Date(b.createdAt);
+            return bookingDate.getMonth() === currentMonth && bookingDate.getFullYear() === currentYear;
+        }).length;
+        
+        const confirmedBookings = confirmed.length;
+        const cancelledBookings = bookings.filter(b => b.status === 'cancelled').length;
+
+        return { totalRevenue, monthlySales, confirmedBookings, cancelledBookings };
+
+    }, [bookings]); // This will only recalculate when bookings data changes
+
     const handleDeleteBooking = async (bookingId) => {
         if (window.confirm('Are you sure you want to permanently delete this booking?')) {
             try {
-                // Assuming you have a deleteBooking method in your service
                 await bookingService.deleteBooking(bookingId); 
                 setBookings(prev => prev.filter(b => b._id !== bookingId));
                 toast.success('Booking deleted successfully!');
@@ -114,6 +138,8 @@ const ViewBookings = () => {
                     <p className="mt-1 text-lg text-gray-500">Monitor and review all reservations made on the platform.</p>
                 </div>
             </motion.div>
+
+            <BookingInsights insights={bookingInsights} loading={loading} />
 
             <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0, transition: { delay: 0.1 } }} className="bg-white rounded-lg shadow-md p-6 mb-8">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
