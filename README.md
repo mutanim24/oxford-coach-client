@@ -1,13 +1,69 @@
-# React + Vite
+# 🚌 Bus Booking App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)  
+[![React](https://img.shields.io/badge/React-17.0.2-blue)](https://reactjs.org/)  
+[![Node.js](https://img.shields.io/badge/Node.js-18.x-green)](https://nodejs.org/)
 
-Currently, two official plugins are available:
+A modern **bus booking web application** built with the MERN stack. Users can search, book, and manage bus trips easily with interactive seat selection, multiple payment options, and a fully functional admin panel.  
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## Table of Contents
+- [Live Link](#live-link)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-# oxford-coach-client
+---
+
+## Live Link
+Access the live application here: [Live Demo](https://your-live-link.com)  
+*Replace the link above with your deployed site URL once available.*
+
+---
+
+## Features
+
+### Core (MVP – Must-Have)
+These features make the app fully functional:
+- **User Registration & Login**: Email/Phone or Google/Facebook login — *Tanim*
+- **Search for Buses**: Source → Destination, Date, Time — *Mahdee*
+- **View Bus Details**: Operator, Type (AC/Non-AC), Seat Layout, Price, Amenities — *Tanim*
+- **Seat Selection**: Interactive seat map — *Mahdee*
+- **Booking & Payment**: Mobile banking, cards, or cash-on-delivery — *Mahdee*
+- **Booking Confirmation & Ticket Generation**: QR/PNR code, downloadable PDF/e-ticket — *Tanim*
+- **Booking History**: Users can see past and upcoming trips — *Mahdee*
+- **Admin Panel**: Add/edit buses, schedules, prices, and view bookings — *Tanim*
+
+### Additional Features
+These features enhance the user experience and make the app more professional:
+- Filter & Sort Options (by price, timing, operator, seat type)  
+- Real-time Seat Availability  
+- Push Notifications / SMS Alerts (booking confirmation, trip reminders, offers)  
+- Discounts & Coupons (promo codes, referral system)  
+- Multiple Payment Gateways (Stripe)  
+- Passenger Profiles (save passenger info for faster booking)  
+- Ratings & Reviews (for buses/operators)  
+- Cancellation & Refund System (with admin-defined rules)  
+
+---
+
+## Tech Stack
+- **Frontend**: React, Redux, Tailwind CSS / Material UI  
+- **Backend**: Node.js, Express.js  
+- **Database**: MongoDB, Mongoose  
+- **Authentication**: JWT, OAuth (Custom Authentication)  
+- **Payment Integration**: Stripe  
+- **Deployment**: Vercel  
+
+---
+
+## Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/your-username/bus-booking-app.git
+   cd bus-booking-app
